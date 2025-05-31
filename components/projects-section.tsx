@@ -1,12 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
-}
 
 export default function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -44,62 +38,43 @@ export default function ProjectsSection() {
   ]
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Title animation
-      gsap.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "top 80%",
-          },
-        },
-      )
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in")
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
 
-      // Projects stagger animation
-      projectsRef.current.forEach((project, index) => {
-        if (project) {
-          gsap.fromTo(
-            project,
-            { opacity: 0, y: 80, scale: 0.8 },
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.8,
-              delay: index * 0.2,
-              ease: "back.out(1.7)",
-              scrollTrigger: {
-                trigger: project,
-                start: "top 85%",
-              },
-            },
-          )
-        }
+    if (titleRef.current) observer.observe(titleRef.current)
+    projectsRef.current.forEach((project) => {
+      if (project) observer.observe(project)
+    })
+
+    return () => {
+      if (titleRef.current) observer.unobserve(titleRef.current)
+      projectsRef.current.forEach((project) => {
+        if (project) observer.unobserve(project)
       })
-    }, sectionRef)
-
-    return () => ctx.revert()
+    }
   }, [])
 
   return (
     <section id="projects" ref={sectionRef} className="py-20 lg:py-32 relative">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-slate-800/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-gray-100/80 dark:from-slate-900/50 dark:to-slate-800/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={titleRef} className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+        <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 font-inter">
+            <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
               Featured Projects
             </span>
           </h2>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto font-inter">
             Explore my latest work showcasing innovative solutions and cutting-edge technologies
           </p>
         </div>
@@ -109,7 +84,8 @@ export default function ProjectsSection() {
             <div
               key={project.title}
               ref={(el) => el && (projectsRef.current[index] = el)}
-              className="group relative bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 hover:transform hover:scale-105"
+              className="group relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 hover:transform hover:scale-105 shadow-lg hover:shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              style={{ animationDelay: `${index * 200}ms` }}
             >
               {/* Gradient Background */}
               <div
@@ -122,21 +98,23 @@ export default function ProjectsSection() {
                 <div className="text-4xl mb-4">{project.icon}</div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors duration-300">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-cyan-500 transition-colors duration-300 font-inter">
                   {project.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-gray-300 mb-4 leading-relaxed">{project.description}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed font-inter">
+                  {project.description}
+                </p>
 
                 {/* Tech Stack */}
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-cyan-400 mb-2">Tech Stack:</h4>
+                  <h4 className="text-sm font-semibold text-cyan-500 mb-2 font-inter">Tech Stack:</h4>
                   <div className="flex flex-wrap gap-2">
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="px-2 py-1 bg-slate-700/50 text-xs text-gray-300 rounded-md border border-slate-600/50"
+                        className="px-2 py-1 bg-gray-100 dark:bg-slate-700/50 text-xs text-gray-700 dark:text-gray-300 rounded-md border border-gray-200 dark:border-slate-600/50 font-mono"
                       >
                         {tech}
                       </span>
@@ -146,11 +124,14 @@ export default function ProjectsSection() {
 
                 {/* Features */}
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-cyan-400 mb-2">Key Features:</h4>
+                  <h4 className="text-sm font-semibold text-cyan-500 mb-2 font-inter">Key Features:</h4>
                   <ul className="space-y-1">
                     {project.features.map((feature) => (
-                      <li key={feature} className="text-sm text-gray-300 flex items-center">
-                        <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full mr-2"></span>
+                      <li
+                        key={feature}
+                        className="text-sm text-gray-600 dark:text-gray-300 flex items-center font-inter"
+                      >
+                        <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full mr-2"></span>
                         {feature}
                       </li>
                     ))}
@@ -159,10 +140,10 @@ export default function ProjectsSection() {
 
                 {/* Actions */}
                 <div className="flex gap-3">
-                  <button className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300">
+                  <button className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 font-inter">
                     Live Demo
                   </button>
-                  <button className="px-4 py-2 border border-cyan-500/50 text-cyan-400 text-sm font-semibold rounded-lg hover:bg-cyan-500/10 transition-all duration-300">
+                  <button className="px-4 py-2 border border-cyan-500/50 text-cyan-500 text-sm font-semibold rounded-lg hover:bg-cyan-500/10 transition-all duration-300 font-inter">
                     Code
                   </button>
                 </div>

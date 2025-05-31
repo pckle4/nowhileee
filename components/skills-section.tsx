@@ -1,12 +1,6 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
-
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
-}
 
 export default function SkillsSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -56,81 +50,43 @@ export default function SkillsSection() {
   ]
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Title animation
-      gsap.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "top 80%",
-          },
-        },
-      )
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in")
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
 
-      // Categories animation
-      categoriesRef.current.forEach((category, index) => {
-        if (category) {
-          gsap.fromTo(
-            category,
-            { opacity: 0, y: 60, scale: 0.9 },
-            {
-              opacity: 1,
-              y: 0,
-              scale: 1,
-              duration: 0.8,
-              delay: index * 0.2,
-              ease: "back.out(1.7)",
-              scrollTrigger: {
-                trigger: category,
-                start: "top 85%",
-              },
-            },
-          )
+    if (titleRef.current) observer.observe(titleRef.current)
+    categoriesRef.current.forEach((category) => {
+      if (category) observer.observe(category)
+    })
 
-          // Animate skill bars
-          const skillBars = category.querySelectorAll(".skill-bar")
-          skillBars.forEach((bar, skillIndex) => {
-            gsap.fromTo(
-              bar,
-              { scaleX: 0 },
-              {
-                scaleX: 1,
-                duration: 1.5,
-                delay: index * 0.2 + skillIndex * 0.1,
-                ease: "power2.out",
-                scrollTrigger: {
-                  trigger: category,
-                  start: "top 85%",
-                },
-              },
-            )
-          })
-        }
+    return () => {
+      if (titleRef.current) observer.unobserve(titleRef.current)
+      categoriesRef.current.forEach((category) => {
+        if (category) observer.unobserve(category)
       })
-    }, sectionRef)
-
-    return () => ctx.revert()
+    }
   }, [])
 
   return (
     <section id="skills" ref={sectionRef} className="py-20 lg:py-32 relative">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-800/50 to-slate-900/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-100/80 to-gray-50/80 dark:from-slate-800/50 dark:to-slate-900/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={titleRef} className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+        <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 font-inter">
+            <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
               Skills & Expertise
             </span>
           </h2>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto font-inter">
             Proficient in modern technologies and frameworks for building scalable applications
           </p>
         </div>
@@ -140,12 +96,15 @@ export default function SkillsSection() {
             <div
               key={category.title}
               ref={(el) => el && (categoriesRef.current[categoryIndex] = el)}
-              className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500"
+              className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 shadow-lg hover:shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              style={{ animationDelay: `${categoryIndex * 200}ms` }}
             >
               {/* Header */}
               <div className="flex items-center mb-6">
                 <div className="text-3xl mr-3">{category.icon}</div>
-                <h3 className={`text-xl font-bold bg-gradient-to-r ${category.gradient} bg-clip-text text-transparent`}>
+                <h3
+                  className={`text-xl font-bold bg-gradient-to-r ${category.gradient} bg-clip-text text-transparent font-inter`}
+                >
                   {category.title}
                 </h3>
               </div>
@@ -155,13 +114,16 @@ export default function SkillsSection() {
                 {category.skills.map((skill, skillIndex) => (
                   <div key={skill.name}>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-gray-300 font-medium">{skill.name}</span>
-                      <span className="text-cyan-400 text-sm font-semibold">{skill.level}%</span>
+                      <span className="text-gray-700 dark:text-gray-300 font-medium font-inter">{skill.name}</span>
+                      <span className="text-cyan-500 text-sm font-semibold font-mono">{skill.level}%</span>
                     </div>
-                    <div className="w-full bg-slate-700/50 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-gray-200 dark:bg-slate-700/50 rounded-full h-2 overflow-hidden">
                       <div
-                        className={`skill-bar h-full bg-gradient-to-r ${category.gradient} rounded-full transform origin-left`}
-                        style={{ width: `${skill.level}%` }}
+                        className={`skill-bar h-full bg-gradient-to-r ${category.gradient} rounded-full transform origin-left transition-all duration-1000 ease-out`}
+                        style={{
+                          width: `${skill.level}%`,
+                          transitionDelay: `${categoryIndex * 200 + skillIndex * 100}ms`,
+                        }}
                       ></div>
                     </div>
                   </div>

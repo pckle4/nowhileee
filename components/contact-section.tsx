@@ -98,7 +98,7 @@ export default function ContactSection() {
   return (
     <section id="contact" ref={sectionRef} className="py-20 lg:py-32 relative">
       {/* Background with glassmorphism */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-gray-100/50 dark:from-slate-900/50 dark:to-slate-800/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-gray-100/80 dark:from-slate-900/50 dark:to-slate-800/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
@@ -116,7 +116,7 @@ export default function ContactSection() {
           {/* Contact Form */}
           <div
             ref={formRef}
-            className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+            className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
           >
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Send a Message</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -230,7 +230,7 @@ export default function ContactSection() {
             style={{ animationDelay: "200ms" }}
           >
             {/* Contact Info */}
-            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
+            <div className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Get In Touch</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
@@ -247,22 +247,6 @@ export default function ContactSection() {
                   <div>
                     <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Email</p>
                     <p className="text-gray-900 dark:text-white font-medium font-mono">theanshshah@gmail.com</p>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-4">
-                    <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Phone</p>
-                    <p className="text-gray-900 dark:text-white font-medium font-mono">+91 9586888734</p>
                   </div>
                 </div>
                 <div className="flex items-center">
@@ -290,25 +274,23 @@ export default function ContactSection() {
               </div>
             </div>
 
-            {/* Social Media */}
-            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Follow Me</h3>
-              <div className="grid grid-cols-2 gap-4">
+            {/* Social Media - Redesigned */}
+            <div className="bg-white/80 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Connect With Me</h3>
+              <div className="space-y-4">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
                     href={social.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative"
+                    className="group flex items-center p-4 rounded-xl bg-gray-50/50 dark:bg-slate-700/30 border border-gray-200/50 dark:border-slate-600/50 hover:border-cyan-500/50 transition-all duration-300 transform hover:scale-105"
                     onMouseEnter={() => setHoveredIcon(social.name)}
                     onMouseLeave={() => setHoveredIcon(null)}
                   >
                     <div
-                      className={`w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 ${
-                        hoveredIcon === social.name
-                          ? "shadow-lg"
-                          : "bg-gray-100/50 dark:bg-slate-700/50 border border-gray-200/50 dark:border-slate-600/50"
+                      className={`w-12 h-12 rounded-lg flex items-center justify-center mr-4 transition-all duration-300 ${
+                        hoveredIcon === social.name ? "shadow-lg" : "bg-gray-100 dark:bg-slate-600/50"
                       }`}
                       style={{
                         backgroundColor: hoveredIcon === social.name ? social.color : undefined,
@@ -318,20 +300,31 @@ export default function ContactSection() {
                     >
                       {social.icon}
                     </div>
-
-                    {/* Tooltip */}
-                    <div
-                      className={`absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded-md text-xs font-medium text-white transition-all duration-200 pointer-events-none font-inter ${
-                        hoveredIcon === social.name ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
-                      }`}
-                      style={{ backgroundColor: social.color }}
-                    >
-                      {social.name}
-                      <div
-                        className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent"
-                        style={{ borderTopColor: social.color }}
-                      ></div>
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-gray-900 dark:text-white font-inter">{social.name}</h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+                        {social.name === "Email"
+                          ? "theanshshah@gmail.com"
+                          : social.name === "GitHub"
+                            ? "github.com/ansh"
+                            : social.name === "LinkedIn"
+                              ? "linkedin.com/in/ansh"
+                              : "@anshshah"}
+                      </p>
                     </div>
+                    <svg
+                      className="w-5 h-5 text-gray-400 group-hover:text-cyan-500 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
+                    </svg>
                   </a>
                 ))}
               </div>
