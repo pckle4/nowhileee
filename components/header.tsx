@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import ThemeToggle from "@/components/theme-toggle"
 
@@ -14,8 +13,6 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { theme } = useTheme()
-  const router = useRouter()
-  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,9 +30,10 @@ export default function Header() {
   const scrollToSection = (sectionId: string) => {
     setIsMobileMenuOpen(false)
 
-    // If we're not on the home page, navigate there first
-    if (pathname !== "/") {
-      router.push(`/#${sectionId}`)
+    // Check if we're on the resume page
+    if (window.location.pathname === "/resume") {
+      // Navigate to home page first, then scroll
+      window.location.href = `/#${sectionId}`
       return
     }
 
@@ -45,9 +43,17 @@ export default function Header() {
     }
   }
 
-  const handleNavigation = (path: string) => {
+  const handleNavigation = (path: string, sectionId?: string) => {
     setIsMobileMenuOpen(false)
-    router.push(path)
+
+    if (sectionId) {
+      scrollToSection(sectionId)
+    } else {
+      // For direct navigation like resume
+      if (path !== window.location.pathname) {
+        window.location.href = path
+      }
+    }
   }
 
   return (
@@ -65,7 +71,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <div ref={logoRef} className="relative">
-                <h1 className="text-xl lg:text-2xl font-black font-inter">
+                <h1 className="text-xl lg:text-2xl font-black">
                   <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
                     NoWhile
                   </span>
@@ -82,34 +88,34 @@ export default function Header() {
           <nav ref={navRef} className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection("hero")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium font-inter"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Home
             </button>
             <button
               onClick={() => scrollToSection("projects")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium font-inter"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Projects
             </button>
             <button
               onClick={() => scrollToSection("skills")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium font-inter"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Skills
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium font-inter"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Contact
             </button>
-            <button
-              onClick={() => handleNavigation("/resume")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium font-inter"
+            <Link
+              href="/resume"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Resume
-            </button>
+            </Link>
           </nav>
 
           {/* Right Side Controls */}
@@ -138,34 +144,34 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700 py-4">
-            <div className="flex flex-col space-y-2">
+            <div className="flex flex-col space-y-4 px-4">
               <button
-                onClick={() => scrollToSection("hero")}
-                className="px-4 py-3 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md font-inter"
+                onClick={() => handleNavigation("/", "hero")}
+                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
               >
                 Home
               </button>
               <button
-                onClick={() => scrollToSection("projects")}
-                className="px-4 py-3 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md font-inter"
+                onClick={() => handleNavigation("/", "projects")}
+                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
               >
                 Projects
               </button>
               <button
-                onClick={() => scrollToSection("skills")}
-                className="px-4 py-3 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md font-inter"
+                onClick={() => handleNavigation("/", "skills")}
+                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
               >
                 Skills
               </button>
               <button
-                onClick={() => scrollToSection("contact")}
-                className="px-4 py-3 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md font-inter"
+                onClick={() => handleNavigation("/", "contact")}
+                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
               >
                 Contact
               </button>
               <button
                 onClick={() => handleNavigation("/resume")}
-                className="px-4 py-3 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md font-inter"
+                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
               >
                 Resume
               </button>

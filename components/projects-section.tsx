@@ -65,7 +65,7 @@ export default function ProjectsSection() {
   return (
     <section id="projects" ref={sectionRef} className="py-20 lg:py-32 relative">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-gray-100/80 dark:from-slate-900/50 dark:to-slate-800/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-white/80 dark:from-slate-900/50 dark:to-slate-800/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
@@ -84,7 +84,7 @@ export default function ProjectsSection() {
             <div
               key={project.title}
               ref={(el) => el && (projectsRef.current[index] = el)}
-              className="group relative bg-white/80 dark:bg-slate-800/50 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 hover:transform hover:scale-105 shadow-lg hover:shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              className="group relative bg-white/90 dark:bg-slate-800/50 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 hover:transform hover:scale-105 shadow-lg hover:shadow-xl opacity-0 translate-y-8 duration-700 ease-out"
               style={{ animationDelay: `${index * 200}ms` }}
             >
               {/* Gradient Background */}
@@ -98,7 +98,7 @@ export default function ProjectsSection() {
                 <div className="text-4xl mb-4">{project.icon}</div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-cyan-500 transition-colors duration-300 font-inter">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors duration-300 font-inter">
                   {project.title}
                 </h3>
 
@@ -109,12 +109,14 @@ export default function ProjectsSection() {
 
                 {/* Tech Stack */}
                 <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-cyan-500 mb-2 font-inter">Tech Stack:</h4>
+                  <h4 className="text-sm font-semibold text-cyan-600 dark:text-cyan-400 mb-2 font-inter">
+                    Tech Stack:
+                  </h4>
                   <div className="flex flex-wrap gap-2">
                     {project.tech.map((tech) => (
                       <span
                         key={tech}
-                        className="px-2 py-1 bg-gray-100 dark:bg-slate-700/50 text-xs text-gray-700 dark:text-gray-300 rounded-md border border-gray-200 dark:border-slate-600/50 font-mono"
+                        className="px-2 py-1 bg-gray-100 dark:bg-slate-700/50 text-xs text-gray-700 dark:text-gray-300 rounded-md border border-gray-200 dark:border-slate-600/50 font-inter"
                       >
                         {tech}
                       </span>
@@ -124,7 +126,9 @@ export default function ProjectsSection() {
 
                 {/* Features */}
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-cyan-500 mb-2 font-inter">Key Features:</h4>
+                  <h4 className="text-sm font-semibold text-cyan-600 dark:text-cyan-400 mb-2 font-inter">
+                    Key Features:
+                  </h4>
                   <ul className="space-y-1">
                     {project.features.map((feature) => (
                       <li
@@ -143,7 +147,7 @@ export default function ProjectsSection() {
                   <button className="flex-1 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 font-inter">
                     Live Demo
                   </button>
-                  <button className="px-4 py-2 border border-cyan-500/50 text-cyan-500 text-sm font-semibold rounded-lg hover:bg-cyan-500/10 transition-all duration-300 font-inter">
+                  <button className="px-4 py-2 border border-cyan-500/50 text-cyan-600 dark:text-cyan-400 text-sm font-semibold rounded-lg hover:bg-cyan-500/10 transition-all duration-300 font-inter">
                     Code
                   </button>
                 </div>

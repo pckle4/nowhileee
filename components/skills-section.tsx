@@ -77,7 +77,7 @@ export default function SkillsSection() {
   return (
     <section id="skills" ref={sectionRef} className="py-20 lg:py-32 relative">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-100/80 to-gray-50/80 dark:from-slate-800/50 dark:to-slate-900/50"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-white/80 to-gray-50/80 dark:from-slate-800/50 dark:to-slate-900/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
@@ -96,7 +96,7 @@ export default function SkillsSection() {
             <div
               key={category.title}
               ref={(el) => el && (categoriesRef.current[categoryIndex] = el)}
-              className="bg-white/80 dark:bg-slate-800/50 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 shadow-lg hover:shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              className="bg-white/90 dark:bg-slate-800/50 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-6 hover:border-cyan-500/50 transition-all duration-500 shadow-lg hover:shadow-xl opacity-0 translate-y-8 duration-700 ease-out"
               style={{ animationDelay: `${categoryIndex * 200}ms` }}
             >
               {/* Header */}
@@ -115,7 +115,9 @@ export default function SkillsSection() {
                   <div key={skill.name}>
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-gray-700 dark:text-gray-300 font-medium font-inter">{skill.name}</span>
-                      <span className="text-cyan-500 text-sm font-semibold font-mono">{skill.level}%</span>
+                      <span className="text-cyan-600 dark:text-cyan-400 text-sm font-semibold font-inter">
+                        {skill.level}%
+                      </span>
                     </div>
                     <div className="w-full bg-gray-200 dark:bg-slate-700/50 rounded-full h-2 overflow-hidden">
                       <div

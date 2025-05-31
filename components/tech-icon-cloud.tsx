@@ -21,13 +21,13 @@ interface TechIconCloudProps {
   iconSize?: number
 }
 
-// Ultra-smooth physics for buttery smooth dragging
+// Ultra-smooth physics for maximum smoothness
 const PHYSICS = {
-  friction: 0.985, // Increased friction for smoother deceleration
-  dragSensitivity: 0.008, // Increased sensitivity for more responsive dragging
-  autoRotationSpeed: 0.0002, // Slightly reduced auto-rotation
-  momentum: 0.95, // Added momentum preservation
-  smoothing: 0.15, // Added smoothing factor
+  friction: 0.995, // Increased friction for smoother deceleration
+  dragSensitivity: 0.004, // Slightly increased for more responsive dragging
+  autoRotationSpeed: 0.0002, // Reduced for gentler auto-rotation
+  inertiaMultiplier: 0.3, // Reduced inertia for smoother feel
+  dampening: 0.98, // Added dampening for ultra-smooth experience
 }
 
 export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconCloudProps) {
@@ -42,15 +42,15 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme } = useTheme()
 
-  // Performance refs with enhanced smoothing
+  // Performance refs with enhanced smoothness
   const rotationRef = useRef({ x: 0, y: 0 })
-  const targetRotationRef = useRef({ x: 0, y: 0 })
   const velocityRef = useRef({ x: 0, y: 0 })
+  const targetVelocityRef = useRef({ x: 0, y: 0 })
   const iconImagesRef = useRef<Map<string, HTMLImageElement>>(new Map())
   const imagesLoadedRef = useRef<Set<string>>(new Set())
   const animationIdRef = useRef<number>()
   const isDraggingRef = useRef(false)
-  const lastTimeRef = useRef(0)
+  const lastUpdateTimeRef = useRef(performance.now())
 
   useEffect(() => {
     setMounted(true)
@@ -94,8 +94,8 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
 
     const isDark = resolvedTheme === "dark"
     return isDark
-      ? "bg-gradient-to-br from-slate-800/80 via-slate-700/80 to-cyan-900/80 backdrop-blur-md"
-      : "bg-gradient-to-br from-white/80 via-gray-50/80 to-blue-50/80 backdrop-blur-md"
+      ? "bg-gradient-to-br from-slate-800/90 via-slate-700/90 to-cyan-900/90 backdrop-blur-md"
+      : "bg-gradient-to-br from-white/90 via-gray-50/90 to-blue-50/90 backdrop-blur-md"
   }, [mounted, resolvedTheme])
 
   // Optimized canvas sizing
@@ -256,7 +256,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     [iconPositions, getIconScreenPosition, iconSize],
   )
 
-  // Ultra-smooth drag handlers with enhanced physics
+  // Ultra-smooth drag handlers
   const handleStart = useCallback(
     (e: React.MouseEvent | React.TouchEvent) => {
       e.preventDefault()
@@ -265,7 +265,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
       isDraggingRef.current = true
       setLastPos(pos)
       velocityRef.current = { x: 0, y: 0 }
-      lastTimeRef.current = performance.now()
+      targetVelocityRef.current = { x: 0, y: 0 }
     },
     [getEventPosition],
   )
@@ -282,25 +282,18 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         return
       }
 
-      const currentTime = performance.now()
-      const deltaTime = Math.max(1, currentTime - lastTimeRef.current)
-      lastTimeRef.current = currentTime
-
       const deltaX = pos.x - lastPos.x
       const deltaY = pos.y - lastPos.y
 
-      // Enhanced sensitivity with time-based smoothing
-      const timeFactor = Math.min(1, deltaTime / 16) // Normalize to 60fps
-      const rotationDeltaY = (deltaX * PHYSICS.dragSensitivity) / timeFactor
-      const rotationDeltaX = (deltaY * PHYSICS.dragSensitivity) / timeFactor
+      const rotationDeltaY = deltaX * PHYSICS.dragSensitivity
+      const rotationDeltaX = deltaY * PHYSICS.dragSensitivity
 
-      // Smooth interpolation to target rotation
-      targetRotationRef.current.y += rotationDeltaY
-      targetRotationRef.current.x += rotationDeltaX
+      rotationRef.current.y += rotationDeltaY
+      rotationRef.current.x += rotationDeltaX
 
-      // Enhanced velocity calculation with momentum
-      velocityRef.current.x = rotationDeltaX * PHYSICS.momentum
-      velocityRef.current.y = rotationDeltaY * PHYSICS.momentum
+      // Set target velocity for smooth interpolation
+      targetVelocityRef.current.x = rotationDeltaX * PHYSICS.inertiaMultiplier
+      targetVelocityRef.current.y = rotationDeltaY * PHYSICS.inertiaMultiplier
 
       setLastPos(pos)
     },
@@ -312,7 +305,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     isDraggingRef.current = false
   }, [])
 
-  // Ultra-optimized animation loop with buttery smooth interpolation
+  // Ultra-optimized animation loop with enhanced smoothness
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext("2d", {
@@ -322,22 +315,27 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     })
     if (!canvas || !ctx) return
 
-    ctx.imageSmoothingEnabled = true
+    ctx.imageSmoothingEnabled = true // Enable for smoother rendering
     ctx.imageSmoothingQuality = "high"
 
-    const animate = () => {
-      // Smooth interpolation for ultra-smooth rotation
-      rotationRef.current.x += (targetRotationRef.current.x - rotationRef.current.x) * PHYSICS.smoothing
-      rotationRef.current.y += (targetRotationRef.current.y - rotationRef.current.y) * PHYSICS.smoothing
+    const animate = (currentTime: number) => {
+      const deltaTime = Math.min(currentTime - lastUpdateTimeRef.current, 16.67) // Cap at ~60fps
+      lastUpdateTimeRef.current = currentTime
 
       if (!isDraggingRef.current) {
-        // Apply auto-rotation and velocity with enhanced smoothing
-        targetRotationRef.current.x += velocityRef.current.x
-        targetRotationRef.current.y += velocityRef.current.y + PHYSICS.autoRotationSpeed
+        // Smooth velocity interpolation
+        velocityRef.current.x += (targetVelocityRef.current.x - velocityRef.current.x) * 0.1
+        velocityRef.current.y += (targetVelocityRef.current.y - velocityRef.current.y) * 0.1
 
-        // Enhanced friction with momentum preservation
-        velocityRef.current.x *= PHYSICS.friction
-        velocityRef.current.y *= PHYSICS.friction
+        // Apply rotation with time-based smoothing
+        rotationRef.current.x += velocityRef.current.x * (deltaTime / 16.67)
+        rotationRef.current.y += (velocityRef.current.y + PHYSICS.autoRotationSpeed) * (deltaTime / 16.67)
+
+        // Apply enhanced dampening
+        velocityRef.current.x *= PHYSICS.friction * PHYSICS.dampening
+        velocityRef.current.y *= PHYSICS.friction * PHYSICS.dampening
+        targetVelocityRef.current.x *= PHYSICS.dampening
+        targetVelocityRef.current.y *= PHYSICS.dampening
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -361,7 +359,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         ctx.save()
         ctx.translate(screenX, screenY)
 
-        const finalScale = scale * scaleFactor * (isHovered ? 1.2 : 1)
+        const finalScale = scale * scaleFactor * (isHovered ? 1.15 : 1) // Slightly reduced hover effect
         ctx.scale(finalScale, finalScale)
         ctx.globalAlpha = opacity
 
@@ -416,7 +414,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         onTouchStart={handleStart}
         onTouchMove={handleMove}
         onTouchEnd={handleEnd}
-        className={`relative rounded-lg md:rounded-2xl shadow-lg cursor-grab active:cursor-grabbing touch-none w-full h-auto border border-gray-200/30 dark:border-slate-700/30 ${getBackgroundStyle()}`}
+        className={`relative rounded-lg md:rounded-2xl shadow-xl cursor-grab active:cursor-grabbing touch-none w-full h-auto border border-gray-200/30 dark:border-slate-700/30 ${getBackgroundStyle()} transition-all duration-300`}
         style={{
           cursor: hoveredIcon ? "pointer" : isDragging ? "grabbing" : "grab",
           touchAction: "none",
@@ -428,7 +426,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
       />
 
       {hoveredIcon && (
-        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-2 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm font-semibold pointer-events-none shadow-lg max-w-xs text-center font-inter">
+        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-2 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm font-semibold pointer-events-none shadow-lg max-w-xs text-center font-inter backdrop-blur-sm">
           {hoveredIcon}
         </div>
       )}
