@@ -37,7 +37,8 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null)
   const [canvasSize, setCanvasSize] = useState({ width: 350, height: 350 })
-  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  const { resolvedTheme } = useTheme()
 
   // Performance refs
   const rotationRef = useRef({ x: 0, y: 0 })
@@ -46,6 +47,10 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const imagesLoadedRef = useRef<Set<string>>(new Set())
   const animationIdRef = useRef<number>()
   const isDraggingRef = useRef(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Memoized tech stack for performance
   const techStack = useMemo(
@@ -78,6 +83,16 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     ],
     [],
   )
+
+  // Get background style based on theme
+  const getBackgroundStyle = useCallback(() => {
+    if (!mounted) return "bg-gray-100"
+
+    const isDark = resolvedTheme === "dark"
+    return isDark
+      ? "bg-gradient-to-br from-slate-800/80 via-slate-700/80 to-cyan-900/80 backdrop-blur-md"
+      : "bg-gradient-to-br from-white/80 via-gray-50/80 to-blue-50/80 backdrop-blur-md"
+  }, [mounted, resolvedTheme])
 
   // Optimized canvas sizing
   useEffect(() => {
@@ -352,6 +367,22 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     }
   }, [iconPositions, mousePos, hoveredIcon, iconSize, canvasSize, getIconScreenPosition])
 
+  if (!mounted) {
+    return (
+      <div className="relative w-full max-w-lg mx-auto">
+        <div
+          className="relative rounded-lg md:rounded-2xl shadow-lg bg-gray-100 animate-pulse w-full"
+          style={{
+            width: canvasSize.width,
+            height: canvasSize.height,
+            maxWidth: "100%",
+            aspectRatio: "1/1",
+          }}
+        />
+      </div>
+    )
+  }
+
   return (
     <div ref={containerRef} className="relative w-full max-w-lg mx-auto">
       <canvas
@@ -365,7 +396,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         onTouchStart={handleStart}
         onTouchMove={handleMove}
         onTouchEnd={handleEnd}
-        className="relative rounded-lg md:rounded-2xl shadow-lg bg-gradient-to-br from-gray-50 via-gray-100 to-blue-50 dark:from-slate-800 dark:via-slate-700 dark:to-cyan-900 cursor-grab active:cursor-grabbing touch-none w-full h-auto"
+        className={`relative rounded-lg md:rounded-2xl shadow-lg cursor-grab active:cursor-grabbing touch-none w-full h-auto border border-gray-200/30 dark:border-slate-700/30 ${getBackgroundStyle()}`}
         style={{
           cursor: hoveredIcon ? "pointer" : isDragging ? "grabbing" : "grab",
           touchAction: "none",
@@ -377,7 +408,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
       />
 
       {hoveredIcon && (
-        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-2 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm font-semibold pointer-events-none shadow-lg max-w-xs text-center">
+        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-2 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm font-semibold pointer-events-none shadow-lg max-w-xs text-center font-inter">
           {hoveredIcon}
         </div>
       )}

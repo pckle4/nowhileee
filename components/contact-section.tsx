@@ -1,12 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { gsap } from "gsap"
-import { ScrollTrigger } from "gsap/ScrollTrigger"
+import type React from "react"
 
-if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger)
-}
+import { useEffect, useRef, useState } from "react"
 
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -14,6 +10,13 @@ export default function ContactSection() {
   const formRef = useRef<HTMLDivElement>(null)
   const socialRef = useRef<HTMLDivElement>(null)
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null)
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  })
+  const [focusedField, setFocusedField] = useState<string | null>(null)
 
   const socialLinks = [
     {
@@ -24,7 +27,7 @@ export default function ContactSection() {
         </svg>
       ),
       color: "#333",
-      url: "https://github.com",
+      url: "https://github.com/ansh",
     },
     {
       name: "LinkedIn",
@@ -34,7 +37,7 @@ export default function ContactSection() {
         </svg>
       ),
       color: "#0077B5",
-      url: "https://linkedin.com",
+      url: "https://linkedin.com/in/ansh",
     },
     {
       name: "Twitter",
@@ -54,145 +57,166 @@ export default function ContactSection() {
         </svg>
       ),
       color: "#EA4335",
-      url: "mailto:contact@nowhile.com",
-    },
-    {
-      name: "Discord",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
-          <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419-.0002 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1568 2.4189Z" />
-        </svg>
-      ),
-      color: "#5865F2",
-      url: "https://discord.com",
-    },
-    {
-      name: "Instagram",
-      icon: (
-        <svg viewBox="0 0 24 24" className="w-6 h-6" fill="currentColor">
-          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-        </svg>
-      ),
-      color: "#E4405F",
-      url: "https://instagram.com",
+      url: "mailto:theanshshah@gmail.com",
     },
   ]
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Title animation
-      gsap.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: titleRef.current,
-            start: "top 80%",
-          },
-        },
-      )
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in")
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
 
-      // Form animation
-      gsap.fromTo(
-        formRef.current,
-        { opacity: 0, x: -50 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.8,
-          delay: 0.3,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: formRef.current,
-            start: "top 80%",
-          },
-        },
-      )
+    if (titleRef.current) observer.observe(titleRef.current)
+    if (formRef.current) observer.observe(formRef.current)
+    if (socialRef.current) observer.observe(socialRef.current)
 
-      // Social icons animation
-      gsap.fromTo(
-        socialRef.current,
-        { opacity: 0, x: 50 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 0.8,
-          delay: 0.5,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: socialRef.current,
-            start: "top 80%",
-          },
-        },
-      )
-    }, sectionRef)
-
-    return () => ctx.revert()
+    return () => {
+      if (titleRef.current) observer.unobserve(titleRef.current)
+      if (formRef.current) observer.unobserve(formRef.current)
+      if (socialRef.current) observer.unobserve(socialRef.current)
+    }
   }, [])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Handle form submission here
+    console.log("Form submitted:", formData)
+  }
 
   return (
     <section id="contact" ref={sectionRef} className="py-20 lg:py-32 relative">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-slate-800/50"></div>
+      {/* Background with glassmorphism */}
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-gray-100/50 dark:from-slate-900/50 dark:to-slate-800/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div ref={titleRef} className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6">
-            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+        <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 font-inter">
+            <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
               Let's Work Together
             </span>
           </h2>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto font-inter">
             Ready to bring your ideas to life? Let's discuss your next project and create something amazing together.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Contact Form */}
-          <div ref={formRef} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-white mb-6">Send a Message</h3>
-            <form className="space-y-6">
+          <div
+            ref={formRef}
+            className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+          >
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Send a Message</h3>
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Name</label>
+                <div className="relative">
                   <input
                     type="text"
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    onFocus={() => setFocusedField("name")}
+                    onBlur={() => setFocusedField(null)}
+                    className="w-full px-4 py-3 bg-gray-50/50 dark:bg-slate-700/50 border border-gray-300/50 dark:border-slate-600/50 rounded-lg text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 peer placeholder-transparent font-inter"
                     placeholder="Your name"
+                    id="name"
                   />
+                  <label
+                    htmlFor="name"
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none font-inter ${
+                      focusedField === "name" || formData.name
+                        ? "-top-2 text-xs bg-white dark:bg-slate-800 px-2 text-cyan-500"
+                        : "top-3 text-gray-500 dark:text-gray-400"
+                    }`}
+                  >
+                    Your Name
+                  </label>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                <div className="relative">
                   <input
                     type="email"
-                    className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField(null)}
+                    className="w-full px-4 py-3 bg-gray-50/50 dark:bg-slate-700/50 border border-gray-300/50 dark:border-slate-600/50 rounded-lg text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 peer placeholder-transparent font-inter"
                     placeholder="your@email.com"
+                    id="email"
                   />
+                  <label
+                    htmlFor="email"
+                    className={`absolute left-4 transition-all duration-300 pointer-events-none font-inter ${
+                      focusedField === "email" || formData.email
+                        ? "-top-2 text-xs bg-white dark:bg-slate-800 px-2 text-cyan-500"
+                        : "top-3 text-gray-500 dark:text-gray-400"
+                    }`}
+                  >
+                    Email Address
+                  </label>
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Subject</label>
+              <div className="relative">
                 <input
                   type="text"
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleInputChange}
+                  onFocus={() => setFocusedField("subject")}
+                  onBlur={() => setFocusedField(null)}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-slate-700/50 border border-gray-300/50 dark:border-slate-600/50 rounded-lg text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 peer placeholder-transparent font-inter"
                   placeholder="Project discussion"
+                  id="subject"
                 />
+                <label
+                  htmlFor="subject"
+                  className={`absolute left-4 transition-all duration-300 pointer-events-none font-inter ${
+                    focusedField === "subject" || formData.subject
+                      ? "-top-2 text-xs bg-white dark:bg-slate-800 px-2 text-cyan-500"
+                      : "top-3 text-gray-500 dark:text-gray-400"
+                  }`}
+                >
+                  Subject
+                </label>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">Message</label>
+              <div className="relative">
                 <textarea
                   rows={5}
-                  className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder-gray-400 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors resize-none"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  onFocus={() => setFocusedField("message")}
+                  onBlur={() => setFocusedField(null)}
+                  className="w-full px-4 py-3 bg-gray-50/50 dark:bg-slate-700/50 border border-gray-300/50 dark:border-slate-600/50 rounded-lg text-gray-900 dark:text-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300 resize-none peer placeholder-transparent font-inter"
                   placeholder="Tell me about your project..."
+                  id="message"
                 ></textarea>
+                <label
+                  htmlFor="message"
+                  className={`absolute left-4 transition-all duration-300 pointer-events-none font-inter ${
+                    focusedField === "message" || formData.message
+                      ? "-top-2 text-xs bg-white dark:bg-slate-800 px-2 text-cyan-500"
+                      : "top-3 text-gray-500 dark:text-gray-400"
+                  }`}
+                >
+                  Your Message
+                </label>
               </div>
               <button
                 type="submit"
-                className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105"
+                className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-inter"
               >
                 Send Message
               </button>
@@ -200,14 +224,18 @@ export default function ContactSection() {
           </div>
 
           {/* Contact Info & Social */}
-          <div ref={socialRef} className="space-y-8">
+          <div
+            ref={socialRef}
+            className="space-y-8 opacity-0 translate-y-8 transition-all duration-700 ease-out"
+            style={{ animationDelay: "200ms" }}
+          >
             {/* Contact Info */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-6">Get In Touch</h3>
+            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Get In Touch</h3>
               <div className="space-y-4">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-4">
-                    <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -217,13 +245,29 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-gray-300 text-sm">Email</p>
-                    <p className="text-white font-medium">contact@nowhile.com</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Email</p>
+                    <p className="text-gray-900 dark:text-white font-medium font-mono">theanshshah@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-4">
-                    <svg className="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                      />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Phone</p>
+                    <p className="text-gray-900 dark:text-white font-medium font-mono">+91 9586888734</p>
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-4">
+                    <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -239,17 +283,17 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-gray-300 text-sm">Location</p>
-                    <p className="text-white font-medium">Available Worldwide</p>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Location</p>
+                    <p className="text-gray-900 dark:text-white font-medium font-inter">Vadodara, Gujarat</p>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Social Media */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8">
-              <h3 className="text-2xl font-bold text-white mb-6">Follow Me</h3>
-              <div className="grid grid-cols-3 gap-4">
+            <div className="bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Follow Me</h3>
+              <div className="grid grid-cols-2 gap-4">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
@@ -262,11 +306,13 @@ export default function ContactSection() {
                   >
                     <div
                       className={`w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-300 transform group-hover:scale-110 ${
-                        hoveredIcon === social.name ? "shadow-lg" : "bg-slate-700/50 border border-slate-600/50"
+                        hoveredIcon === social.name
+                          ? "shadow-lg"
+                          : "bg-gray-100/50 dark:bg-slate-700/50 border border-gray-200/50 dark:border-slate-600/50"
                       }`}
                       style={{
                         backgroundColor: hoveredIcon === social.name ? social.color : undefined,
-                        color: hoveredIcon === social.name ? "white" : "#94a3b8",
+                        color: hoveredIcon === social.name ? "white" : "#6b7280",
                         boxShadow: hoveredIcon === social.name ? `0 8px 25px ${social.color}40` : undefined,
                       }}
                     >
@@ -275,7 +321,7 @@ export default function ContactSection() {
 
                     {/* Tooltip */}
                     <div
-                      className={`absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded-md text-xs font-medium text-white transition-all duration-200 pointer-events-none ${
+                      className={`absolute -top-10 left-1/2 transform -translate-x-1/2 px-2 py-1 rounded-md text-xs font-medium text-white transition-all duration-200 pointer-events-none font-inter ${
                         hoveredIcon === social.name ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
                       }`}
                       style={{ backgroundColor: social.color }}
