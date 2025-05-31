@@ -1,101 +1,98 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { gsap } from "gsap"
+import Link from "next/link"
 import TechIconCloud from "@/components/tech-icon-cloud"
 
 export default function HeroSection() {
-  const sectionRef = useRef<HTMLElement>(null)
-  const titleRef = useRef<HTMLDivElement>(null)
-  const subtitleRef = useRef<HTMLDivElement>(null)
-  const ctaRef = useRef<HTMLDivElement>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+  const nameRef = useRef<HTMLHeadingElement>(null)
+  const titleRef = useRef<HTMLHeadingElement>(null)
+  const descRef = useRef<HTMLParagraphElement>(null)
+  const buttonsRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ delay: 1 })
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("animate-in")
+          }
+        })
+      },
+      { threshold: 0.1 },
+    )
 
-      tl.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 50, scale: 0.8 },
-        { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "back.out(1.7)" },
-      )
-        .fromTo(
-          subtitleRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" },
-          "-=0.5",
-        )
-        .fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, "-=0.3")
-    }, sectionRef)
+    if (nameRef.current) observer.observe(nameRef.current)
+    if (titleRef.current) observer.observe(titleRef.current)
+    if (descRef.current) observer.observe(descRef.current)
+    if (buttonsRef.current) observer.observe(buttonsRef.current)
 
-    return () => ctx.revert()
+    return () => {
+      if (nameRef.current) observer.unobserve(nameRef.current)
+      if (titleRef.current) observer.unobserve(titleRef.current)
+      if (descRef.current) observer.unobserve(descRef.current)
+      if (buttonsRef.current) observer.unobserve(buttonsRef.current)
+    }
   }, [])
 
-  const scrollToProjects = () => {
-    const element = document.getElementById("projects")
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
   return (
-    <section
-      id="hero"
-      ref={sectionRef}
-      className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20"
-    >
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500/5 rounded-full blur-3xl"></div>
-      </div>
+    <section id="hero" ref={heroRef} className="pt-24 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+          {/* Left Content */}
+          <div className="w-full md:w-1/2 space-y-6 md:space-y-8 text-center md:text-left">
+            <h1
+              ref={nameRef}
+              className="text-3xl md:text-4xl lg:text-5xl font-bold opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              style={{ animationDelay: "200ms" }}
+            >
+              Hi, I'm{" "}
+              <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                Ansh Shah
+              </span>
+            </h1>
 
-      {/* Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+            <h2
+              ref={titleRef}
+              className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-gray-300 opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              style={{ animationDelay: "400ms" }}
+            >
+              Full Stack Developer
+            </h2>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <div className="text-center lg:text-left">
-            <div ref={titleRef} className="mb-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 leading-tight">
-                <span className="block text-white mb-2">Full Stack</span>
-                <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                  Developer
-                </span>
-              </h1>
-            </div>
+            <p
+              ref={descRef}
+              className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              style={{ animationDelay: "600ms" }}
+            >
+              I build modern, responsive web applications with cutting-edge technologies. Specializing in React,
+              Next.js, and Node.js, I create seamless user experiences backed by robust server architectures.
+            </p>
 
-            <div ref={subtitleRef} className="mb-8">
-              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-                Crafting innovative web solutions with modern technologies. Passionate about creating seamless user
-                experiences and robust backend systems.
-              </p>
-            </div>
-
-            <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button
-                onClick={scrollToProjects}
-                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-cyan-500/25"
+            <div
+              ref={buttonsRef}
+              className="flex flex-wrap gap-4 justify-center md:justify-start opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              style={{ animationDelay: "800ms" }}
+            >
+              <Link
+                href="/resume"
+                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
               >
-                View My Work
-              </button>
+                View Resume
+              </Link>
               <button
                 onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-                className="px-8 py-4 border-2 border-cyan-500 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500 hover:text-white transition-all duration-300 transform hover:scale-105"
+                className="px-6 py-3 bg-white dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-700 font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
               >
-                Get In Touch
+                Contact Me
               </button>
             </div>
           </div>
 
-          {/* Globe */}
-          <div className="flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-2xl scale-110"></div>
-              <TechIconCloud radius={140} iconSize={40} />
-            </div>
+          {/* Right Content - Tech Icon Cloud */}
+          <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+            <TechIconCloud />
           </div>
         </div>
       </div>

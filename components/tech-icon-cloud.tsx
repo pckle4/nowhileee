@@ -1,7 +1,9 @@
 "use client"
 
 import type React from "react"
+
 import { useEffect, useRef, useState, useCallback, useMemo } from "react"
+import { useTheme } from "next-themes"
 
 interface Icon {
   x: number
@@ -35,6 +37,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [hoveredIcon, setHoveredIcon] = useState<string | null>(null)
   const [canvasSize, setCanvasSize] = useState({ width: 350, height: 350 })
+  const { theme } = useTheme()
 
   // Performance refs
   const rotationRef = useRef({ x: 0, y: 0 })
@@ -362,7 +365,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         onTouchStart={handleStart}
         onTouchMove={handleMove}
         onTouchEnd={handleEnd}
-        className="relative rounded-lg md:rounded-2xl shadow-xl bg-gradient-to-br from-white via-gray-50 to-blue-50 dark:from-slate-800 dark:via-slate-700 dark:to-cyan-900 cursor-grab active:cursor-grabbing touch-none w-full h-auto"
+        className="relative rounded-lg md:rounded-2xl shadow-lg bg-gradient-to-br from-gray-50 via-gray-100 to-blue-50 dark:from-slate-800 dark:via-slate-700 dark:to-cyan-900 cursor-grab active:cursor-grabbing touch-none w-full h-auto"
         style={{
           cursor: hoveredIcon ? "pointer" : isDragging ? "grabbing" : "grab",
           touchAction: "none",
