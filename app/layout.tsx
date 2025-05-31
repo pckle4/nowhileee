@@ -7,7 +7,7 @@ import "./globals.css"
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
-  preload: true,
+  variable: "--font-inter",
 })
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.variable} font-sans`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           {children}
         </ThemeProvider>
