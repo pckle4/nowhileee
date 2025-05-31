@@ -55,11 +55,11 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
-          <div className="text-center lg:text-left">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center min-h-[calc(100vh-5rem)]">
+          {/* Content - Left Side */}
+          <div className="order-2 lg:order-1 text-center lg:text-left">
             <div ref={titleRef} className="mb-6">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black mb-4 leading-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-4 leading-tight">
                 <span className="block text-white mb-2">Full Stack</span>
                 <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
                   Developer
@@ -68,7 +68,7 @@ export default function HeroSection() {
             </div>
 
             <div ref={subtitleRef} className="mb-8">
-              <p className="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+              <p className="text-base sm:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
                 Crafting innovative web solutions with modern technologies. Passionate about creating seamless user
                 experiences and robust backend systems.
               </p>
@@ -77,24 +77,23 @@ export default function HeroSection() {
             <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <button
                 onClick={scrollToProjects}
-                className="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-cyan-500/25"
+                className="px-6 py-3 lg:px-8 lg:py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-cyan-500/25"
               >
                 View My Work
               </button>
               <button
                 onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-                className="px-8 py-4 border-2 border-cyan-500 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500 hover:text-white transition-all duration-300 transform hover:scale-105"
+                className="px-6 py-3 lg:px-8 lg:py-4 border-2 border-cyan-500 text-cyan-400 font-semibold rounded-lg hover:bg-cyan-500 hover:text-white transition-all duration-300 transform hover:scale-105"
               >
                 Get In Touch
               </button>
             </div>
           </div>
 
-          {/* Globe */}
-          <div className="flex justify-center lg:justify-end">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 to-purple-500/20 rounded-full blur-2xl scale-110"></div>
-              <TechIconCloud radius={140} iconSize={40} />
+          {/* Globe - Right Side */}
+          <div className="order-1 lg:order-2 flex justify-center lg:justify-end">
+            <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+              <TechIconCloud radius={120} iconSize={32} />
             </div>
           </div>
         </div>

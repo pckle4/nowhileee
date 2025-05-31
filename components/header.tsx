@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from "react"
 import { gsap } from "gsap"
 import type { HTMLHeaderElement, HTMLDivElement, HTMLNavElement } from "react"
-import TechIconCloud from "@/components/tech-icon-cloud"
 import ThemeToggle from "@/components/theme-toggle"
 
 export default function Header() {
@@ -77,10 +76,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo with Globe */}
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 lg:w-16 lg:h-16">
-              <TechIconCloud radius={30} iconSize={16} />
-            </div>
+          <div className="flex items-center">
             <div ref={logoRef} className="relative">
               <h1 className="text-xl lg:text-2xl font-black">
                 <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">

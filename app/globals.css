@@ -85,6 +85,11 @@
     will-change: transform;
   }
 
+  /* 3D transforms */
+  .preserve-3d {
+    transform-style: preserve-3d;
+  }
+
   /* GSAP-powered animations */
   .heart-beat {
     animation: heartbeat 1.5s ease-in-out infinite;
@@ -178,4 +183,22 @@ canvas {
   image-rendering: -webkit-optimize-contrast;
   image-rendering: optimize-contrast;
   image-rendering: crisp-edges;
+}
+
+/* Image optimization */
+img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
