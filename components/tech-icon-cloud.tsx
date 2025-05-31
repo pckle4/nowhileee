@@ -80,11 +80,11 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
       const isMobile = window.innerWidth < 640
       const isTablet = window.innerWidth < 1024
 
-      let size = 520 // Desktop
+      let size = radius * 4 // Scale based on radius
       if (isMobile) {
-        size = Math.min(350, window.innerWidth - 40) // Mobile with padding
+        size = Math.min(radius * 3, window.innerWidth - 40)
       } else if (isTablet) {
-        size = 450 // Tablet
+        size = radius * 3.5
       }
 
       setCanvasSize({ width: size, height: size })
@@ -93,20 +93,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     updateCanvasSize()
     window.addEventListener("resize", updateCanvasSize)
     return () => window.removeEventListener("resize", updateCanvasSize)
-  }, [])
-
-  // Initial GSAP animation
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        containerRef.current,
-        { opacity: 0, scale: 0.8, y: 50 },
-        { opacity: 1, scale: 1, y: 0, duration: 1, delay: 2, ease: "back.out(1.7)" },
-      )
-    }, containerRef)
-
-    return () => ctx.revert()
-  }, [])
+  }, [radius])
 
   // Load images with mobile optimization
   useEffect(() => {
@@ -372,7 +359,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
 
         if (img && isLoaded) {
           if (isHovered) {
-            ctx.shadowColor = "#3b82f6"
+            ctx.shadowColor = "#06b6d4"
             ctx.shadowBlur = isMobile ? 12 : 18
             ctx.shadowOffsetX = 0
             ctx.shadowOffsetY = 0
@@ -383,7 +370,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
           ctx.fillStyle = isHovered ? "#ffffff" : "rgba(255, 255, 255, 0.98)"
           ctx.fill()
 
-          ctx.strokeStyle = isHovered ? "#3b82f6" : "rgba(59, 130, 246, 0.4)"
+          ctx.strokeStyle = isHovered ? "#06b6d4" : "rgba(6, 182, 212, 0.4)"
           ctx.lineWidth = isHovered ? 2 : 1
           ctx.stroke()
 
@@ -396,7 +383,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
           ctx.arc(0, 0, iconSize / 2, 0, Math.PI * 2)
           ctx.fillStyle = icon.color
           ctx.fill()
-          ctx.strokeStyle = "#3b82f6"
+          ctx.strokeStyle = "#06b6d4"
           ctx.lineWidth = 2
           ctx.stroke()
 
@@ -423,8 +410,8 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   }, [iconPositions, mousePos, hoveredIcon, iconSize, canvasSize, getIconScreenPosition])
 
   return (
-    <div ref={containerRef} className="relative opacity-0 w-full max-w-lg mx-auto">
-      <div className="absolute inset-0 bg-blue-500/8 rounded-xl md:rounded-2xl blur-xl"></div>
+    <div ref={containerRef} className="relative w-full max-w-lg mx-auto">
+      <div className="absolute inset-0 bg-cyan-500/10 rounded-xl md:rounded-2xl blur-xl"></div>
 
       <canvas
         ref={canvasRef}
@@ -437,7 +424,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         onTouchStart={handleStart}
         onTouchMove={handleMove}
         onTouchEnd={handleEnd}
-        className="relative rounded-lg md:rounded-2xl shadow-xl md:shadow-2xl bg-gradient-to-br from-white via-slate-50 to-blue-50 dark:from-slate-800 dark:via-slate-700 dark:to-blue-900 cursor-grab active:cursor-grabbing border border-blue-200/50 dark:border-blue-500/30 touch-none will-change-transform w-full h-auto"
+        className="relative rounded-lg md:rounded-2xl shadow-xl md:shadow-2xl bg-gradient-to-br from-slate-800/80 via-slate-700/80 to-cyan-900/80 cursor-grab active:cursor-grabbing border border-cyan-400/30 touch-none will-change-transform w-full h-auto backdrop-blur-sm"
         style={{
           cursor: hoveredIcon ? "pointer" : isDragging ? "grabbing" : "grab",
           touchAction: "none",
@@ -449,17 +436,17 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         role="img"
       />
 
-      <div className="absolute inset-0 rounded-lg md:rounded-2xl border border-blue-400/30 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-1/2 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse"></div>
-        <div className="absolute bottom-0 left-1/4 w-1/2 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse"></div>
-        <div className="absolute left-0 top-1/4 h-1/2 w-px bg-gradient-to-b from-transparent via-blue-400 to-transparent animate-pulse"></div>
-        <div className="absolute right-0 top-1/4 h-1/2 w-px bg-gradient-to-b from-transparent via-blue-400 to-transparent animate-pulse"></div>
+      <div className="absolute inset-0 rounded-lg md:rounded-2xl border border-cyan-400/30 pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
+        <div className="absolute bottom-0 left-1/4 w-1/2 h-px bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-pulse"></div>
+        <div className="absolute left-0 top-1/4 h-1/2 w-px bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-pulse"></div>
+        <div className="absolute right-0 top-1/4 h-1/2 w-px bg-gradient-to-b from-transparent via-cyan-400 to-transparent animate-pulse"></div>
       </div>
 
       {hoveredIcon && (
-        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-500 dark:to-cyan-500 text-white px-2 md:px-4 py-1 md:py-2 rounded-md md:rounded-xl text-xs md:text-sm font-semibold pointer-events-none shadow-lg border border-blue-400/50 max-w-xs text-center">
+        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-blue-600 dark:from-cyan-500 dark:to-blue-500 text-white px-2 md:px-4 py-1 md:py-2 rounded-md md:rounded-xl text-xs md:text-sm font-semibold pointer-events-none shadow-lg border border-cyan-400/50 max-w-xs text-center">
           {hoveredIcon}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-600 dark:border-t-blue-500"></div>
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-cyan-600 dark:border-t-cyan-500"></div>
         </div>
       )}
     </div>
