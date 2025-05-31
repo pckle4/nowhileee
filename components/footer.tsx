@@ -126,7 +126,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="border-t border-slate-700/50 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} NoWhile.com. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© {new Date().getFullYear()} NoWhile. All rights reserved.</p>
           <p className="text-gray-400 text-sm mt-2 md:mt-0">Built with ❤️ using Next.js & Tailwind CSS</p>
         </div>
       </div>

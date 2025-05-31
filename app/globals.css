@@ -69,102 +69,22 @@
 }
 
 @layer utilities {
-  /* Ultra-performance optimizations */
+  /* Performance optimizations */
   .will-change-transform {
     will-change: transform;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
-    perspective: 1000px;
   }
 
-  /* Hardware-accelerated animations */
   .gpu-accelerated {
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
-    perspective: 1000px;
     will-change: transform;
-  }
-
-  /* 3D transforms */
-  .preserve-3d {
-    transform-style: preserve-3d;
-  }
-
-  /* GSAP-powered animations */
-  .heart-beat {
-    animation: heartbeat 1.5s ease-in-out infinite;
-  }
-
-  .blob {
-    animation: blob 7s infinite;
-    will-change: transform;
-    transform: translate3d(0, 0, 0);
-  }
-
-  .blob-1 {
-    animation-delay: 0s;
-  }
-
-  .blob-2 {
-    animation-delay: 2s;
-  }
-
-  .blob-3 {
-    animation-delay: 4s;
-  }
-}
-
-/* Optimized keyframe animations */
-@keyframes heartbeat {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(0, 0, 0) scale(1.1);
-  }
-}
-
-@keyframes blob {
-  0% {
-    transform: translate3d(0px, 0px, 0) scale(1);
-  }
-  33% {
-    transform: translate3d(30px, -50px, 0) scale(1.1);
-  }
-  66% {
-    transform: translate3d(-20px, 20px, 0) scale(0.9);
-  }
-  100% {
-    transform: translate3d(0px, 0px, 0) scale(1);
-  }
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .blob {
-    animation: blob-mobile 7s infinite;
-  }
-}
-
-@keyframes blob-mobile {
-  0% {
-    transform: translate3d(0px, 0px, 0) scale(1);
-  }
-  33% {
-    transform: translate3d(15px, -25px, 0) scale(1.05);
-  }
-  66% {
-    transform: translate3d(-10px, 10px, 0) scale(0.95);
-  }
-  100% {
-    transform: translate3d(0px, 0px, 0) scale(1);
   }
 }
 
 /* Smooth transitions */
 html {
-  transition: background-color 0.3s ease, color 0.3s ease;
   scroll-behavior: smooth;
 }
 
@@ -178,17 +98,10 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Performance hints for browser */
+/* Performance hints */
 canvas {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
-/* Image optimization */
-img {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
 }
 

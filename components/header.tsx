@@ -17,7 +17,7 @@ export default function Header() {
       setIsScrolled(window.scrollY > 50)
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
@@ -69,13 +69,13 @@ export default function Header() {
       ref={headerRef}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-slate-900/95 backdrop-blur-md border-b border-cyan-500/20 shadow-lg shadow-cyan-500/10"
+          ? "bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-gray-200/50 dark:border-cyan-500/20 shadow-lg dark:shadow-cyan-500/10"
           : "bg-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo with Globe */}
+          {/* Logo */}
           <div className="flex items-center">
             <div ref={logoRef} className="relative">
               <h1 className="text-xl lg:text-2xl font-black">
@@ -94,25 +94,25 @@ export default function Header() {
           <nav ref={navRef} className="hidden md:flex items-center gap-8">
             <button
               onClick={() => scrollToSection("hero")}
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-200 font-medium"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Home
             </button>
             <button
               onClick={() => scrollToSection("projects")}
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-200 font-medium"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Projects
             </button>
             <button
               onClick={() => scrollToSection("skills")}
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-200 font-medium"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Skills
             </button>
             <button
               onClick={() => scrollToSection("contact")}
-              className="text-gray-300 hover:text-cyan-400 transition-colors duration-200 font-medium"
+              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
             >
               Contact
             </button>
@@ -123,7 +123,7 @@ export default function Header() {
             <ThemeToggle />
 
             {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 rounded-lg bg-slate-800/50 border border-cyan-500/30 text-cyan-400">
+            <button className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-cyan-500/30 text-gray-700 dark:text-cyan-400">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
