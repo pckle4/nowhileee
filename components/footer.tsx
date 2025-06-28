@@ -74,18 +74,6 @@ export default function Footer() {
               code. Specializing in modern web technologies and user-centered design.
             </p>
 
-            {/* Current Date & Time */}
-            <div className="footer-datetime">
-              <div className="footer-datetime-item">
-                <Calendar className="w-4 h-4 text-cyan-500" />
-                <span>{date}</span>
-              </div>
-              <div className="footer-datetime-item">
-                <Clock className="w-4 h-4 text-cyan-500" />
-                <span>{time}</span>
-              </div>
-            </div>
-
             {/* IP Detector */}
             <div className="footer-ip-section">
               <IPDetector />
@@ -216,6 +204,19 @@ export default function Footer() {
                 This website and its content are protected by copyright law. Unauthorized reproduction or distribution
                 of any materials from this site is strictly prohibited.
               </p>
+            </div>
+
+            {/* Current Date & Time as Text */}
+            <div className="footer-datetime-text">
+              <span className="datetime-item">
+                <Calendar className="w-3 h-3 text-violet-500" />
+                {date}
+              </span>
+              <span className="datetime-separator">•</span>
+              <span className="datetime-item">
+                <Clock className="w-3 h-3 text-emerald-500" />
+                {time}
+              </span>
             </div>
           </div>
 

@@ -3,7 +3,19 @@
 import type React from "react"
 
 import { useEffect, useRef, useState } from "react"
-import { Send, Terminal, User, Mail, MessageSquare, Zap, Github, Linkedin, Twitter, AtSign } from "lucide-react"
+import {
+  Send,
+  Terminal,
+  User,
+  Mail,
+  MessageSquare,
+  Zap,
+  Github,
+  Linkedin,
+  Twitter,
+  AtSign,
+  CheckCircle,
+} from "lucide-react"
 
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -21,6 +33,9 @@ export default function ContactSection() {
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [terminalText, setTerminalText] = useState("")
   const [showCursor, setShowCursor] = useState(true)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [submissionData, setSubmissionData] = useState<any>(null)
 
   const socialLinks = [
     {
@@ -51,6 +66,8 @@ export default function ContactSection() {
 
   // Terminal typing animation
   useEffect(() => {
+    if (isSubmitted) return
+
     const messages = [
       "$ whoami",
       "> ansh_shah",
@@ -97,7 +114,7 @@ export default function ContactSection() {
       clearTimeout(timer)
       clearInterval(cursorInterval)
     }
-  }, [])
+  }, [isSubmitted])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -127,165 +144,222 @@ export default function ContactSection() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log("Form submitted:", formData)
+    setIsSubmitting(true)
+
+    // Simulate API call
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+
+    const timestamp = new Date().toLocaleString()
+    const submissionId = Math.random().toString(36).substr(2, 9).toUpperCase()
+
+    setSubmissionData({
+      ...formData,
+      timestamp,
+      submissionId,
+      status: "success",
+    })
+
+    // Show terminal submission details
+    const submissionText = `$ contact_form --submit
+> Processing form data...
+> ================================
+> SUBMISSION SUCCESSFUL
+> ================================
+> ID: ${submissionId}
+> Name: ${formData.name}
+> Email: ${formData.email}
+> Subject: ${formData.subject}
+> Message: ${formData.message.substring(0, 50)}${formData.message.length > 50 ? "..." : ""}
+> Timestamp: ${timestamp}
+> Status: ✅ DELIVERED
+> ================================
+> Thank you for reaching out!
+> I'll get back to you soon.
+> ================================
+$ _`
+
+    setTerminalText(submissionText)
+    setIsSubmitted(true)
+    setIsSubmitting(false)
+
+    // Reset form after 10 seconds
+    setTimeout(() => {
+      setIsSubmitted(false)
+      setFormData({ name: "", email: "", subject: "", message: "" })
+      setSubmissionData(null)
+    }, 10000)
   }
 
   return (
-    <section id="contact" ref={sectionRef} className="py-20 lg:py-32 relative">
+    <section id="contact" ref={sectionRef} className="contact-section-enhanced">
       {/* Background with glassmorphism */}
-      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-white/80 dark:from-slate-900/50 dark:to-slate-800/50"></div>
+      <div className="contact-background-overlay"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 font-inter">
-            <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-              Let's Connect
-            </span>
+          <h2 className="contact-title">
+            <span className="contact-title-gradient">Let's Connect</span>
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto font-inter">
+          <p className="contact-subtitle">
             Ready to bring your ideas to life? Let's discuss your next project and create something amazing together.
           </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Terminal-Style Contact Form */}
+          {/* Enhanced Terminal-Style Contact Form */}
           <div
             ref={formRef}
-            className="bg-gray-900 dark:bg-black border border-gray-700 dark:border-gray-800 rounded-2xl overflow-hidden shadow-2xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+            className="terminal-container-enhanced opacity-0 translate-y-8 transition-all duration-700 ease-out"
           >
             {/* Terminal Header */}
-            <div className="flex items-center gap-2 px-4 py-3 bg-gray-800 dark:bg-gray-900 border-b border-gray-700">
-              <div className="flex gap-2">
-                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <div className="terminal-header-enhanced">
+              <div className="terminal-controls">
+                <div className="terminal-dot terminal-dot-red"></div>
+                <div className="terminal-dot terminal-dot-yellow"></div>
+                <div className="terminal-dot terminal-dot-green"></div>
               </div>
-              <div className="flex items-center gap-2 ml-4">
+              <div className="terminal-title">
                 <Terminal className="w-4 h-4 text-gray-400" />
-                <span className="text-gray-400 text-sm font-mono">contact@nowhile.com</span>
+                <span className="terminal-title-text">contact@nowhile.com</span>
               </div>
             </div>
 
             {/* Terminal Content */}
-            <div className="p-6">
+            <div className="terminal-content-enhanced">
               {/* Terminal Output */}
-              <div
-                ref={terminalRef}
-                className="bg-black rounded-lg p-4 mb-6 font-mono text-sm text-green-400 min-h-[200px] overflow-hidden"
-              >
-                <pre className="whitespace-pre-wrap">
+              <div ref={terminalRef} className="terminal-output-enhanced">
+                <pre className="terminal-pre">
                   {terminalText}
-                  {showCursor && <span className="bg-green-400 text-black">█</span>}
+                  {!isSubmitted && showCursor && <span className="terminal-cursor">█</span>}
                 </pre>
               </div>
 
               {/* Contact Form */}
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="relative">
-                    <div className="flex items-center gap-2 mb-2">
-                      <User className="w-4 h-4 text-cyan-400" />
-                      <label className="text-gray-300 text-sm font-mono">name</label>
+              {!isSubmitted && (
+                <form onSubmit={handleSubmit} className="terminal-form-enhanced">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="terminal-input-group">
+                      <div className="terminal-input-label">
+                        <User className="w-4 h-4 text-cyan-400" />
+                        <label className="terminal-label">name</label>
+                      </div>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField("name")}
+                        onBlur={() => setFocusedField(null)}
+                        className="terminal-input-enhanced"
+                        placeholder="your_name"
+                        required
+                      />
+                    </div>
+                    <div className="terminal-input-group">
+                      <div className="terminal-input-label">
+                        <Mail className="w-4 h-4 text-cyan-400" />
+                        <label className="terminal-label">email</label>
+                      </div>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        onFocus={() => setFocusedField("email")}
+                        onBlur={() => setFocusedField(null)}
+                        className="terminal-input-enhanced"
+                        placeholder="you@example.com"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="terminal-input-group">
+                    <div className="terminal-input-label">
+                      <Zap className="w-4 h-4 text-cyan-400" />
+                      <label className="terminal-label">subject</label>
                     </div>
                     <input
                       type="text"
-                      name="name"
-                      value={formData.name}
+                      name="subject"
+                      value={formData.subject}
                       onChange={handleInputChange}
-                      onFocus={() => setFocusedField("name")}
+                      onFocus={() => setFocusedField("subject")}
                       onBlur={() => setFocusedField(null)}
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 font-mono placeholder-gray-500"
-                      placeholder="your_name"
+                      className="terminal-input-enhanced"
+                      placeholder="project_discussion"
+                      required
                     />
                   </div>
-                  <div className="relative">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Mail className="w-4 h-4 text-cyan-400" />
-                      <label className="text-gray-300 text-sm font-mono">email</label>
+
+                  <div className="terminal-input-group">
+                    <div className="terminal-input-label">
+                      <MessageSquare className="w-4 h-4 text-cyan-400" />
+                      <label className="terminal-label">message</label>
                     </div>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
+                    <textarea
+                      rows={5}
+                      name="message"
+                      value={formData.message}
                       onChange={handleInputChange}
-                      onFocus={() => setFocusedField("email")}
+                      onFocus={() => setFocusedField("message")}
                       onBlur={() => setFocusedField(null)}
-                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 font-mono placeholder-gray-500"
-                      placeholder="you@example.com"
-                    />
+                      className="terminal-textarea-enhanced"
+                      placeholder="tell_me_about_your_project..."
+                      required
+                    ></textarea>
                   </div>
-                </div>
 
-                <div className="relative">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Zap className="w-4 h-4 text-cyan-400" />
-                    <label className="text-gray-300 text-sm font-mono">subject</label>
-                  </div>
-                  <input
-                    type="text"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleInputChange}
-                    onFocus={() => setFocusedField("subject")}
-                    onBlur={() => setFocusedField(null)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 font-mono placeholder-gray-500"
-                    placeholder="project_discussion"
-                  />
-                </div>
+                  <button type="submit" disabled={isSubmitting} className="terminal-submit-enhanced">
+                    {isSubmitting ? (
+                      <>
+                        <div className="terminal-loading-spinner" />
+                        ./processing...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                        ./send_message
+                      </>
+                    )}
+                  </button>
+                </form>
+              )}
 
-                <div className="relative">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MessageSquare className="w-4 h-4 text-cyan-400" />
-                    <label className="text-gray-300 text-sm font-mono">message</label>
-                  </div>
-                  <textarea
-                    rows={5}
-                    name="message"
-                    value={formData.message}
-                    onChange={handleInputChange}
-                    onFocus={() => setFocusedField("message")}
-                    onBlur={() => setFocusedField(null)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all duration-300 resize-none font-mono placeholder-gray-500"
-                    placeholder="tell_me_about_your_project..."
-                  ></textarea>
+              {/* Success Message */}
+              {isSubmitted && (
+                <div className="terminal-success-message">
+                  <CheckCircle className="w-6 h-6 text-green-400 animate-pulse" />
+                  <span className="text-green-400 font-mono">Message sent successfully!</span>
                 </div>
-
-                <button
-                  type="submit"
-                  className="w-full px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-semibold rounded-lg hover:from-cyan-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-mono flex items-center justify-center gap-2 group"
-                >
-                  <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                  ./send_message
-                </button>
-              </form>
+              )}
             </div>
           </div>
 
-          {/* Contact Info & Social */}
+          {/* Enhanced Contact Info & Social */}
           <div
             ref={socialRef}
             className="space-y-8 opacity-0 translate-y-8 transition-all duration-700 ease-out"
             style={{ animationDelay: "200ms" }}
           >
             {/* Contact Info */}
-            <div className="bg-white/90 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Get In Touch</h3>
-              <div className="space-y-4">
-                <div className="flex items-center group">
-                  <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-4 group-hover:bg-cyan-500/30 transition-colors">
-                    <AtSign className="w-6 h-6 text-cyan-500" />
+            <div className="contact-info-card-enhanced">
+              <h3 className="contact-info-title">Get In Touch</h3>
+              <div className="contact-info-items">
+                <div className="contact-info-item-enhanced">
+                  <div className="contact-info-icon-enhanced neon-cyan">
+                    <AtSign className="w-6 h-6" />
                   </div>
                   <div>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Email</p>
-                    <p className="text-gray-900 dark:text-white font-medium font-mono">theanshshah@gmail.com</p>
+                    <p className="contact-info-label">Email</p>
+                    <p className="contact-info-value">theanshshah@gmail.com</p>
                   </div>
                 </div>
-                <div className="flex items-center group">
-                  <div className="w-12 h-12 bg-cyan-500/20 rounded-lg flex items-center justify-center mr-4 group-hover:bg-cyan-500/30 transition-colors">
-                    <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="contact-info-item-enhanced">
+                  <div className="contact-info-icon-enhanced neon-purple">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -301,54 +375,43 @@ export default function ContactSection() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm font-inter">Location</p>
-                    <p className="text-gray-900 dark:text-white font-medium font-inter">Vadodara, Gujarat</p>
+                    <p className="contact-info-label">Location</p>
+                    <p className="contact-info-value">Vadodara, Gujarat</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Connect With Me - Redesigned */}
-            <div className="bg-white/90 dark:bg-slate-800/70 backdrop-blur-md border border-gray-200/50 dark:border-slate-700/50 rounded-2xl p-8 shadow-xl">
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 font-inter">Connect With Me</h3>
-              <div className="flex justify-center">
-                <div className="grid grid-cols-2 gap-6">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.name}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group relative flex flex-col items-center"
-                      onMouseEnter={() => setHoveredIcon(social.name)}
-                      onMouseLeave={() => setHoveredIcon(null)}
+            {/* Enhanced Social Links */}
+            <div className="social-links-card-enhanced">
+              <h3 className="social-links-title">Connect With Me</h3>
+              <div className="social-links-grid">
+                {socialLinks.map((social) => (
+                  <a
+                    key={social.name}
+                    href={social.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="social-link-enhanced"
+                    onMouseEnter={() => setHoveredIcon(social.name)}
+                    onMouseLeave={() => setHoveredIcon(null)}
+                  >
+                    <div
+                      className={`social-icon-enhanced ${hoveredIcon === social.name ? "social-icon-hovered" : ""}`}
+                      style={{
+                        backgroundColor: hoveredIcon === social.name ? social.color : undefined,
+                        boxShadow: hoveredIcon === social.name ? `0 20px 40px ${social.color}40` : undefined,
+                      }}
                     >
-                      <div
-                        className={`w-20 h-20 rounded-2xl flex items-center justify-center transition-all duration-500 transform group-hover:scale-110 group-hover:-translate-y-2 ${
-                          hoveredIcon === social.name
-                            ? "shadow-2xl"
-                            : "bg-gray-100/80 dark:bg-slate-700/50 border border-gray-200/50 dark:border-slate-600/50"
-                        }`}
-                        style={{
-                          backgroundColor: hoveredIcon === social.name ? social.color : undefined,
-                          color: hoveredIcon === social.name ? "white" : "#6b7280",
-                          boxShadow: hoveredIcon === social.name ? `0 20px 40px ${social.color}40` : undefined,
-                        }}
-                      >
-                        <social.icon className="w-8 h-8" />
-                      </div>
-                      <span
-                        className={`mt-3 text-sm font-medium transition-all duration-300 font-inter ${
-                          hoveredIcon === social.name
-                            ? "text-gray-900 dark:text-white transform -translate-y-1"
-                            : "text-gray-600 dark:text-gray-400"
-                        }`}
-                      >
-                        {social.name}
-                      </span>
-                    </a>
-                  ))}
-                </div>
+                      <social.icon className="w-8 h-8" />
+                    </div>
+                    <span
+                      className={`social-name-enhanced ${hoveredIcon === social.name ? "social-name-hovered" : ""}`}
+                    >
+                      {social.name}
+                    </span>
+                  </a>
+                ))}
               </div>
             </div>
           </div>

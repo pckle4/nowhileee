@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Eye, EyeOff, Monitor, Smartphone, Globe } from "lucide-react"
+import { Eye, EyeOff, Monitor, Smartphone, Globe, Wifi, Cpu } from "lucide-react"
 
 interface DeviceInfo {
   ipv4: string
@@ -16,10 +16,8 @@ export default function IPDetector() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    if (isVisible && !deviceInfo) {
-      fetchDeviceInfo()
-    }
-  }, [isVisible, deviceInfo])
+    fetchDeviceInfo()
+  }, [])
 
   const getDeviceType = () => {
     const userAgent = navigator.userAgent.toLowerCase()
@@ -62,7 +60,6 @@ export default function IPDetector() {
         os: getOSInfo(),
       })
     } catch (err) {
-      // Fallback for demo
       setDeviceInfo({
         ipv4: "192.168.1.1",
         device: getDeviceType(),
@@ -79,72 +76,83 @@ export default function IPDetector() {
   }
 
   return (
-    <div className="ip-detector-container">
-      <button onClick={toggleVisibility} className="ip-detector-trigger" aria-label="Toggle device information">
-        {isVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-      </button>
+    <div className="ip-detector-full-container">
+      <div className="ip-detector-full-box">
+        {/* Toggle Icon */}
+        <button onClick={toggleVisibility} className="ip-detector-toggle-icon" aria-label="Toggle device information">
+          {isVisible ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+        </button>
 
-      {isVisible && (
-        <div className="ip-detector-box">
-          <div className="ip-detector-header">
-            <Globe className="w-4 h-4 text-cyan-500" />
-            <span className="ip-detector-title">Device Info</span>
+        {/* Header */}
+        <div className="ip-detector-full-header">
+          <div className="ip-detector-animated-icon">
+            <Globe className="w-4 h-4 text-emerald-500 animate-spin-slow" />
           </div>
+          <span className="ip-detector-full-title">Network Monitor</span>
+        </div>
 
+        {/* Content */}
+        <div className={`ip-detector-full-content ${!isVisible ? "blurred" : ""}`}>
           {loading ? (
-            <div className="ip-detector-loading">
-              <div className="loading-spinner" />
-              <span>Detecting...</span>
+            <div className="ip-detector-full-loading">
+              <div className="loading-spinner-colorful" />
+              <span>Scanning network...</span>
             </div>
           ) : deviceInfo ? (
-            <div className="ip-detector-content">
-              <div className="ip-detector-item">
-                <div className="ip-detector-icon">
-                  <Globe className="w-3 h-3" />
+            <div className="ip-detector-items">
+              <div className="ip-detector-full-item">
+                <div className="ip-detector-full-icon neon-blue">
+                  <Wifi className="w-3 h-3 animate-pulse" />
                 </div>
-                <div className="ip-detector-info">
-                  <span className="ip-detector-label">IPv4</span>
-                  <span className="ip-detector-value">{deviceInfo.ipv4}</span>
+                <div className="ip-detector-full-info">
+                  <span className="ip-detector-full-label">IPv4</span>
+                  <span className="ip-detector-full-value">{deviceInfo.ipv4}</span>
                 </div>
               </div>
 
-              <div className="ip-detector-item">
-                <div className="ip-detector-icon">
+              <div className="ip-detector-full-item">
+                <div className="ip-detector-full-icon neon-purple">
                   {deviceInfo.device.includes("Mobile") ? (
-                    <Smartphone className="w-3 h-3" />
+                    <Smartphone className="w-3 h-3 animate-bounce-subtle" />
                   ) : (
-                    <Monitor className="w-3 h-3" />
+                    <Monitor className="w-3 h-3 animate-float" />
                   )}
                 </div>
-                <div className="ip-detector-info">
-                  <span className="ip-detector-label">Device</span>
-                  <span className="ip-detector-value">{deviceInfo.device}</span>
+                <div className="ip-detector-full-info">
+                  <span className="ip-detector-full-label">Device</span>
+                  <span className="ip-detector-full-value">{deviceInfo.device}</span>
                 </div>
               </div>
 
-              <div className="ip-detector-item">
-                <div className="ip-detector-icon">
-                  <Globe className="w-3 h-3" />
+              <div className="ip-detector-full-item">
+                <div className="ip-detector-full-icon neon-orange">
+                  <Globe className="w-3 h-3 animate-spin-slow" />
                 </div>
-                <div className="ip-detector-info">
-                  <span className="ip-detector-label">Browser</span>
-                  <span className="ip-detector-value">{deviceInfo.browser}</span>
+                <div className="ip-detector-full-info">
+                  <span className="ip-detector-full-label">Browser</span>
+                  <span className="ip-detector-full-value">{deviceInfo.browser}</span>
                 </div>
               </div>
 
-              <div className="ip-detector-item">
-                <div className="ip-detector-icon">
-                  <Monitor className="w-3 h-3" />
+              <div className="ip-detector-full-item">
+                <div className="ip-detector-full-icon neon-green">
+                  <Cpu className="w-3 h-3 animate-pulse" />
                 </div>
-                <div className="ip-detector-info">
-                  <span className="ip-detector-label">OS</span>
-                  <span className="ip-detector-value">{deviceInfo.os}</span>
+                <div className="ip-detector-full-info">
+                  <span className="ip-detector-full-label">OS</span>
+                  <span className="ip-detector-full-value">{deviceInfo.os}</span>
                 </div>
               </div>
             </div>
           ) : null}
         </div>
-      )}
+
+        {/* Status Indicator */}
+        <div className="ip-detector-status">
+          <div className="status-dot animate-pulse-glow"></div>
+          <span className="status-text">Live</span>
+        </div>
+      </div>
     </div>
   )
 }

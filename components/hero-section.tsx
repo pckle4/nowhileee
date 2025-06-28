@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react"
 import Link from "next/link"
 import TechIconCloud from "@/components/tech-icon-cloud"
+import AnimatedTechIcons from "@/components/animated-tech-icons"
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -37,8 +38,17 @@ export default function HeroSection() {
   }, [])
 
   return (
-    <section id="hero" ref={heroRef} className="pt-24 md:pt-32 pb-16 md:pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <section id="hero" ref={heroRef} className="hero-section-with-grid">
+      {/* Animated Grid Background */}
+      <div className="hero-grid-background">
+        <div className="grid-pattern"></div>
+        <div className="grid-overlay"></div>
+      </div>
+
+      {/* Animated Tech Icons */}
+      <AnimatedTechIcons />
+
+      <div className="max-w-7xl mx-auto relative z-10">
         <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
           {/* Left Content */}
           <div className="w-full md:w-1/2 space-y-6 md:space-y-8 text-center md:text-left">
@@ -47,10 +57,7 @@ export default function HeroSection() {
               className="text-3xl md:text-4xl lg:text-5xl font-bold opacity-0 translate-y-8 transition-all duration-700 ease-out"
               style={{ animationDelay: "200ms" }}
             >
-              Hi, I'm{" "}
-              <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-                Ansh Shah
-              </span>
+              Hi, I'm <span className="hero-name-gradient">Ansh Shah</span>
             </h1>
 
             <h2
@@ -75,15 +82,12 @@ export default function HeroSection() {
               className="flex flex-wrap gap-4 justify-center md:justify-start opacity-0 translate-y-8 transition-all duration-700 ease-out"
               style={{ animationDelay: "800ms" }}
             >
-              <Link
-                href="/resume"
-                className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-              >
+              <Link href="/resume" className="hero-button-primary">
                 View Resume
               </Link>
               <button
                 onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
-                className="px-6 py-3 bg-white dark:bg-slate-800 text-gray-900 dark:text-white border border-gray-300 dark:border-slate-700 font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-300"
+                className="hero-button-secondary"
               >
                 Contact Me
               </button>
