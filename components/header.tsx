@@ -3,15 +3,18 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
+import { Menu, X, Home, Briefcase, Code, Mail, FileText, Hand } from "lucide-react"
 import ThemeToggle from "@/components/theme-toggle"
 
 export default function Header() {
   const headerRef = useRef<HTMLElement>(null)
   const logoRef = useRef<HTMLDivElement>(null)
   const underlineRef = useRef<HTMLDivElement>(null)
+  const handRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLElement>(null)
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const { theme } = useTheme()
 
   useEffect(() => {
@@ -21,6 +24,43 @@ export default function Header() {
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
+
+  // Animated underline with hand effect
+  useEffect(() => {
+    const logo = logoRef.current
+    const underline = underlineRef.current
+    const hand = handRef.current
+
+    if (!logo || !underline || !hand) return
+
+    const handleMouseEnter = () => {
+      setIsHovered(true)
+      // Animate underline
+      underline.style.transform = "scaleX(1)"
+      underline.style.opacity = "1"
+      // Animate hand
+      hand.style.transform = "translateX(0) rotate(0deg)"
+      hand.style.opacity = "1"
+    }
+
+    const handleMouseLeave = () => {
+      setIsHovered(false)
+      // Reset underline
+      underline.style.transform = "scaleX(0)"
+      underline.style.opacity = "0"
+      // Reset hand
+      hand.style.transform = "translateX(-10px) rotate(-15deg)"
+      hand.style.opacity = "0"
+    }
+
+    logo.addEventListener("mouseenter", handleMouseEnter)
+    logo.addEventListener("mouseleave", handleMouseLeave)
+
+    return () => {
+      logo.removeEventListener("mouseenter", handleMouseEnter)
+      logo.removeEventListener("mouseleave", handleMouseLeave)
+    }
   }, [])
 
   const toggleMobileMenu = () => {
@@ -56,6 +96,13 @@ export default function Header() {
     }
   }
 
+  const navItems = [
+    { label: "Home", icon: Home, action: () => scrollToSection("hero") },
+    { label: "Projects", icon: Briefcase, action: () => scrollToSection("projects") },
+    { label: "Skills", icon: Code, action: () => scrollToSection("skills") },
+    { label: "Contact", icon: Mail, action: () => scrollToSection("contact") },
+  ]
+
   return (
     <header
       ref={headerRef}
@@ -67,18 +114,34 @@ export default function Header() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
+          {/* Logo with animated underline and hand */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
-              <div ref={logoRef} className="relative">
-                <h1 className="text-xl lg:text-2xl font-black">
+              <div ref={logoRef} className="relative cursor-pointer group">
+                <h1 className="text-xl lg:text-2xl font-black relative">
                   <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
                     NoWhile
                   </span>
+
+                  {/* Animated Hand Pointer */}
+                  <div
+                    ref={handRef}
+                    className="absolute -right-8 top-0 opacity-0 transition-all duration-500 ease-out"
+                    style={{
+                      transform: "translateX(-10px) rotate(-15deg)",
+                    }}
+                  >
+                    <Hand className="w-5 h-5 text-amber-500" />
+                  </div>
                 </h1>
+
+                {/* Animated Underline */}
                 <div
                   ref={underlineRef}
-                  className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-full"
+                  className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 rounded-full origin-left transition-all duration-500 ease-out opacity-0"
+                  style={{
+                    transform: "scaleX(0)",
+                  }}
                 ></div>
               </div>
             </Link>
@@ -86,35 +149,24 @@ export default function Header() {
 
           {/* Navigation - Desktop */}
           <nav ref={navRef} className="hidden md:flex items-center gap-8">
-            <button
-              onClick={() => scrollToSection("hero")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection("projects")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
-            >
-              Projects
-            </button>
-            <button
-              onClick={() => scrollToSection("skills")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
-            >
-              Skills
-            </button>
-            <button
-              onClick={() => scrollToSection("contact")}
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
-            >
-              Contact
-            </button>
+            {navItems.map((item) => (
+              <button
+                key={item.label}
+                onClick={item.action}
+                className="group flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-all duration-300 font-medium relative"
+              >
+                <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                <span>{item.label}</span>
+                <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 group-hover:w-full transition-all duration-300"></div>
+              </button>
+            ))}
             <Link
               href="/resume"
-              className="text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors duration-200 font-medium"
+              className="group flex items-center gap-2 text-gray-700 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-all duration-300 font-medium relative"
             >
-              Resume
+              <FileText className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+              <span>Resume</span>
+              <div className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-cyan-500 to-blue-600 group-hover:w-full transition-all duration-300"></div>
             </Link>
           </nav>
 
@@ -125,55 +177,34 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <button
               onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300"
+              className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors duration-200"
               aria-label="Toggle mobile menu"
             >
-              {isMobileMenuOpen ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-700 py-4">
-            <div className="flex flex-col space-y-4 px-4">
-              <button
-                onClick={() => handleNavigation("/", "hero")}
-                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
-              >
-                Home
-              </button>
-              <button
-                onClick={() => handleNavigation("/", "projects")}
-                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
-              >
-                Projects
-              </button>
-              <button
-                onClick={() => handleNavigation("/", "skills")}
-                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
-              >
-                Skills
-              </button>
-              <button
-                onClick={() => handleNavigation("/", "contact")}
-                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
-              >
-                Contact
-              </button>
+          <div className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200 dark:border-slate-700 py-4 animate-in slide-in-from-top duration-300">
+            <div className="flex flex-col space-y-2 px-4">
+              {navItems.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={item.action}
+                  className="flex items-center gap-3 text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors duration-200 group"
+                >
+                  <item.icon className="w-4 h-4 text-cyan-500 group-hover:scale-110 transition-transform duration-200" />
+                  <span>{item.label}</span>
+                </button>
+              ))}
               <button
                 onClick={() => handleNavigation("/resume")}
-                className="text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md"
+                className="flex items-center gap-3 text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors duration-200 group"
               >
-                Resume
+                <FileText className="w-4 h-4 text-cyan-500 group-hover:scale-110 transition-transform duration-200" />
+                <span>Resume</span>
               </button>
             </div>
           </div>
