@@ -1,18 +1,18 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 
-const inter = Inter({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
-  preload: true,
 })
 
 export const metadata: Metadata = {
-  title: "Ansh Shah - Terminal Portfolio",
-  description: "Hacker-style terminal portfolio showcasing development skills",
-  generator: "v0.dev",
+  title: "Terminal Portfolio | Full Stack Developer",
+  description: "A cyberpunk-themed terminal portfolio showcasing full stack development skills",
+  keywords: ["portfolio", "developer", "terminal", "cyberpunk", "full stack"],
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -21,8 +21,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>{children}</body>
+    <html lang="en" className={jetbrainsMono.className}>
+      <body className="bg-terminal-dark text-terminal-green antialiased">{children}</body>
     </html>
   )
 }
