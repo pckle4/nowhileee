@@ -19,8 +19,8 @@ export default function SkillBar({ skill, level, category }: SkillBarProps) {
     return () => clearTimeout(timer)
   }, [level])
 
-  const getCategoryColor = (category: string) => {
-    switch (category.toLowerCase()) {
+  const getCategoryColor = () => {
+    switch (category) {
       case "frontend":
         return "bg-neon-cyan"
       case "backend":
@@ -28,7 +28,7 @@ export default function SkillBar({ skill, level, category }: SkillBarProps) {
       case "database":
         return "bg-neon-purple"
       case "devops":
-        return "bg-neon-pink"
+        return "bg-neon-orange"
       default:
         return "bg-terminal-green"
     }
@@ -37,12 +37,12 @@ export default function SkillBar({ skill, level, category }: SkillBarProps) {
   return (
     <div className="mb-4">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-terminal-green font-mono text-sm">{skill}</span>
-        <span className="text-gray-400 font-mono text-xs">{level}%</span>
+        <span className="font-mono text-terminal-green text-sm">{skill}</span>
+        <span className="font-mono text-gray-400 text-xs">{level}%</span>
       </div>
-      <div className="w-full bg-terminal-gray border border-terminal-green/30 rounded-full h-2">
+      <div className="w-full bg-gray-700 rounded-full h-2">
         <div
-          className={`h-full rounded-full transition-all duration-1000 ease-out ${getCategoryColor(category)}`}
+          className={`h-2 rounded-full transition-all duration-1000 ease-out ${getCategoryColor()}`}
           style={{ width: `${animatedLevel}%` }}
         />
       </div>

@@ -15,28 +15,27 @@ export default function MatrixRain() {
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
 
-    const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}"
-    const matrixArray = matrix.split("")
-
-    const fontSize = 10
+    const characters =
+      "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    const fontSize = 14
     const columns = canvas.width / fontSize
 
     const drops: number[] = []
-    for (let x = 0; x < columns; x++) {
-      drops[x] = 1
+    for (let i = 0; i < columns; i++) {
+      drops[i] = 1
     }
 
     function draw() {
       if (!ctx || !canvas) return
 
-      ctx.fillStyle = "rgba(0, 0, 0, 0.04)"
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)"
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
       ctx.fillStyle = "#00ff00"
-      ctx.font = fontSize + "px monospace"
+      ctx.font = `${fontSize}px monospace`
 
       for (let i = 0; i < drops.length; i++) {
-        const text = matrixArray[Math.floor(Math.random() * matrixArray.length)]
+        const text = characters[Math.floor(Math.random() * characters.length)]
         ctx.fillText(text, i * fontSize, drops[i] * fontSize)
 
         if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
@@ -46,7 +45,7 @@ export default function MatrixRain() {
       }
     }
 
-    const interval = setInterval(draw, 35)
+    const interval = setInterval(draw, 33)
 
     const handleResize = () => {
       canvas.width = window.innerWidth
@@ -61,5 +60,11 @@ export default function MatrixRain() {
     }
   }, [])
 
-  return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none opacity-20 z-0" />
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none opacity-20 z-0"
+      style={{ background: "transparent" }}
+    />
+  )
 }

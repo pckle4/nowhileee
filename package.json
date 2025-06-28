@@ -1,5 +1,5 @@
 {
-  "name": "terminal-portfolio",
+  "name": "portfolio",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -29,6 +29,7 @@
     "@radix-ui/react-scroll-area": "latest",
     "@radix-ui/react-select": "latest",
     "@radix-ui/react-separator": "latest",
+    "@radix-ui/react-sheet": "^1.0.4",
     "@radix-ui/react-slider": "latest",
     "@radix-ui/react-slot": "latest",
     "@radix-ui/react-switch": "latest",
@@ -53,7 +54,6 @@
     "react-hook-form": "latest",
     "react-resizable-panels": "latest",
     "recharts": "latest",
-    "shadcn": "latest",
     "sonner": "latest",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
@@ -63,11 +63,10 @@
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.51.0",
-    "eslint-config-next": "14.0.0",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.5",
     "postcss": "^8.5",
-    "tailwindcss": "^3.3.5",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
 }

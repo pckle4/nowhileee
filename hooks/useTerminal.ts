@@ -2,92 +2,69 @@
 
 import { useState, useCallback } from "react"
 
-export interface TerminalLine {
-  id: string
-  type: "command" | "output" | "error"
-  content: string
-  timestamp: Date
+interface TerminalCommand {
+  command: string
+  output: string
+  timestamp: string
 }
 
 export function useTerminal() {
-  const [lines, setLines] = useState<TerminalLine[]>([])
-  const [isProcessing, setIsProcessing] = useState(false)
-
-  const addLine = useCallback((content: string, type: TerminalLine["type"] = "output") => {
-    const newLine: TerminalLine = {
-      id: Math.random().toString(36).substr(2, 9),
-      type,
-      content,
-      timestamp: new Date(),
-    }
-    setLines((prev) => [...prev, newLine])
-  }, [])
-
-  const clearTerminal = useCallback(() => {
-    setLines([])
-  }, [])
-
-  const executeCommand = useCallback(
-    async (command: string) => {
-      setIsProcessing(true)
-      addLine(`$ ${command}`, "command")
-
-      // Simulate command processing
-      await new Promise((resolve) => setTimeout(resolve, 500))
-
-      // Process different commands
-      switch (command.toLowerCase().trim()) {
-        case "help":
-          addLine("Available commands:")
-          addLine("  help     - Show this help message")
-          addLine("  about    - Show information about me")
-          addLine("  skills   - List my technical skills")
-          addLine("  projects - Show my projects")
-          addLine("  contact  - Get my contact information")
-          addLine("  clear    - Clear the terminal")
-          break
-        case "about":
-          addLine("Hi! I'm a Full Stack Developer passionate about creating")
-          addLine("innovative web applications and solving complex problems.")
-          break
-        case "skills":
-          addLine("Technical Skills:")
-          addLine("• Frontend: React, Next.js, TypeScript, Tailwind CSS")
-          addLine("• Backend: Node.js, Python, Express, FastAPI")
-          addLine("• Database: PostgreSQL, MongoDB, Redis")
-          addLine("• DevOps: Docker, AWS, Vercel, GitHub Actions")
-          break
-        case "projects":
-          addLine("Featured Projects:")
-          addLine("1. E-commerce Platform - Full-stack web application")
-          addLine("2. Task Management App - React & Node.js")
-          addLine("3. AI Chat Bot - Python & OpenAI API")
-          break
-        case "contact":
-          addLine("Contact Information:")
-          addLine("Email: contact@example.com")
-          addLine("GitHub: github.com/username")
-          addLine("LinkedIn: linkedin.com/in/username")
-          break
-        case "clear":
-          clearTerminal()
-          setIsProcessing(false)
-          return
-        default:
-          addLine(`Command not found: ${command}`, "error")
-          addLine('Type "help" for available commands')
-      }
-
-      setIsProcessing(false)
+  const [history, setHistory] = useState<TerminalCommand[]>([
+    {
+      command: "whoami",
+      output: "full-stack-developer",
+      timestamp: new Date().toLocaleTimeString(),
     },
-    [addLine, clearTerminal],
-  )
+    {
+      command: "ls -la",
+      output:
+        "drwxr-xr-x  projects/\ndrwxr-xr-x  skills/\ndrwxr-xr-x  contact/\n-rw-r--r--  about.txt\n-rw-r--r--  resume.pdf",
+      timestamp: new Date().toLocaleTimeString(),
+    },
+  ])
 
-  return {
-    lines,
-    isProcessing,
-    executeCommand,
-    clearTerminal,
-    addLine,
-  }
+  const executeCommand = useCallback((command: string) => {
+    const timestamp = new Date().toLocaleTimeString()
+    let output = ""
+
+    switch (command.toLowerCase().trim()) {
+      case "help":
+        output =
+          "Available commands:\n  help - Show this help message\n  about - Show about information\n  skills - List technical skills\n  projects - Show recent projects\n  contact - Display contact information\n  clear - Clear terminal\n  whoami - Display current user"
+        break
+      case "about":
+        output =
+          "Full Stack Developer with 5+ years of experience.\nSpecialized in React, Node.js, and cloud technologies.\nPassionate about clean code and user experience."
+        break
+      case "skills":
+        output =
+          "Frontend: React, TypeScript, Next.js, Tailwind CSS\nBackend: Node.js, Python, Express, FastAPI\nDatabase: PostgreSQL, MongoDB, Redis\nDevOps: Docker, AWS, Vercel"
+        break
+      case "projects":
+        output =
+          "Recent Projects:\n1. E-Commerce Platform - React, Node.js, PostgreSQL\n2. Task Management App - Next.js, TypeScript, Prisma\n3. AI Chat Bot - Python, FastAPI, OpenAI"
+        break
+      case "contact":
+        output = "Email: contact@example.com\nGitHub: github.com/username\nLinkedIn: linkedin.com/in/username"
+        break
+      case "clear":
+        setHistory([])
+        return
+      case "whoami":
+        output = "full-stack-developer"
+        break
+      case "":
+        return
+      default:
+        output = `Command not found: ${command}\nType 'help' for available commands.`
+    }
+
+    setHistory((prev) => [...prev, { command, output, timestamp }])
+  }, [])
+
+  const clearHistory = useCallback(() => {
+    setHistory([])
+  }, [])
+
+  return { history, executeCommand, clearHistory }
 }

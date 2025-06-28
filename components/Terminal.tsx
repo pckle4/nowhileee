@@ -7,7 +7,8 @@ import { useTerminal } from "@/hooks/useTerminal"
 
 export default function Terminal() {
   const [input, setInput] = useState("")
-  const { lines, isProcessing, executeCommand } = useTerminal()
+  const [isTyping, setIsTyping] = useState(false)
+  const { history, executeCommand } = useTerminal()
   const inputRef = useRef<HTMLInputElement>(null)
   const terminalRef = useRef<HTMLDivElement>(null)
 
@@ -15,82 +16,62 @@ export default function Terminal() {
     if (terminalRef.current) {
       terminalRef.current.scrollTop = terminalRef.current.scrollHeight
     }
-  }, [lines])
+  }, [history])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (input.trim() && !isProcessing) {
-      await executeCommand(input.trim())
+    if (input.trim()) {
+      setIsTyping(true)
+      executeCommand(input)
       setInput("")
+      setTimeout(() => setIsTyping(false), 500)
     }
   }
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Tab") {
-      e.preventDefault()
-    }
+  const handleTerminalClick = () => {
+    inputRef.current?.focus()
   }
 
   return (
-    <div className="bg-black border border-terminal-green rounded-lg p-4 font-mono text-sm h-96 flex flex-col">
-      <div className="flex items-center gap-2 mb-4 pb-2 border-b border-terminal-green/30">
-        <div className="flex gap-1">
-          <div className="w-3 h-3 rounded-full bg-red-500"></div>
-          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-          <div className="w-3 h-3 rounded-full bg-green-500"></div>
-        </div>
-        <span className="text-terminal-green text-xs">terminal@portfolio:~$</span>
+    <div className="terminal-window">
+      <div className="terminal-header">
+        <div className="terminal-button bg-red-500"></div>
+        <div className="terminal-button bg-yellow-500"></div>
+        <div className="terminal-button bg-green-500"></div>
+        <span className="text-terminal-green text-sm ml-4">terminal.exe</span>
       </div>
+      <div
+        ref={terminalRef}
+        className="terminal-content h-64 overflow-y-auto cursor-text"
+        onClick={handleTerminalClick}
+      >
+        <div className="text-terminal-green mb-2">Welcome to Portfolio Terminal v1.0.0</div>
+        <div className="text-gray-400 mb-4 text-sm">Type 'help' for available commands</div>
 
-      <div ref={terminalRef} className="flex-1 overflow-y-auto mb-4 space-y-1">
-        <div className="text-terminal-green">Welcome to my portfolio terminal! Type 'help' for available commands.</div>
-        {lines.map((line) => (
-          <div
-            key={line.id}
-            className={`${
-              line.type === "command"
-                ? "text-neon-cyan"
-                : line.type === "error"
-                  ? "text-red-400"
-                  : "text-terminal-green"
-            }`}
-          >
-            {line.content}
+        {history.map((entry, index) => (
+          <div key={index} className="mb-2">
+            <div className="flex items-center gap-2 text-terminal-green">
+              <span>user@portfolio:~$</span>
+              <span>{entry.command}</span>
+            </div>
+            <div className="text-gray-300 whitespace-pre-line ml-4 text-sm">{entry.output}</div>
           </div>
         ))}
-        {isProcessing && (
-          <div className="text-yellow-400 flex items-center gap-2">
-            <span>Processing</span>
-            <div className="flex gap-1">
-              <div className="w-1 h-1 bg-yellow-400 rounded-full animate-pulse"></div>
-              <div
-                className="w-1 h-1 bg-yellow-400 rounded-full animate-pulse"
-                style={{ animationDelay: "0.2s" }}
-              ></div>
-              <div
-                className="w-1 h-1 bg-yellow-400 rounded-full animate-pulse"
-                style={{ animationDelay: "0.4s" }}
-              ></div>
-            </div>
-          </div>
-        )}
-      </div>
 
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
-        <span className="text-neon-cyan">$</span>
-        <input
-          ref={inputRef}
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className="flex-1 bg-transparent text-terminal-green outline-none caret-terminal-green"
-          placeholder="Type a command..."
-          disabled={isProcessing}
-          autoFocus
-        />
-        <span className="text-terminal-green animate-blink">|</span>
-      </form>
+        <form onSubmit={handleSubmit} className="flex items-center gap-2">
+          <span className="text-terminal-green">user@portfolio:~$</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            className="flex-1 bg-transparent text-terminal-green outline-none font-mono"
+            placeholder="Type a command..."
+            autoFocus
+          />
+          <span className="text-terminal-green animate-pulse">{isTyping ? "..." : "|"}</span>
+        </form>
+      </div>
     </div>
   )
 }

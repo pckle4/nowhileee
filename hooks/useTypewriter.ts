@@ -17,5 +17,10 @@ export function useTypewriter(text: string, speed = 50) {
     }
   }, [currentIndex, text, speed])
 
+  useEffect(() => {
+    setDisplayText("")
+    setCurrentIndex(0)
+  }, [text])
+
   return displayText
 }

@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { ExternalLink, Github } from "lucide-react"
+import { Github, ExternalLink, AlertCircle, CheckCircle, Wrench } from "lucide-react"
 
 interface ProjectCardProps {
   title: string
@@ -20,64 +19,80 @@ export default function ProjectCard({
   liveUrl,
   status,
 }: ProjectCardProps) {
-  const [isHovered, setIsHovered] = useState(false)
+  const getStatusIcon = () => {
+    switch (status) {
+      case "active":
+        return <CheckCircle size={16} className="text-terminal-green" />
+      case "maintenance":
+        return <Wrench size={16} className="text-neon-yellow" />
+      case "archived":
+        return <AlertCircle size={16} className="text-gray-500" />
+    }
+  }
 
-  const statusColors = {
-    active: "text-green-400",
-    maintenance: "text-yellow-400",
-    archived: "text-red-400",
+  const getStatusColor = () => {
+    switch (status) {
+      case "active":
+        return "text-terminal-green"
+      case "maintenance":
+        return "text-neon-yellow"
+      case "archived":
+        return "text-gray-500"
+    }
   }
 
   return (
-    <div
-      className="bg-terminal-gray border border-terminal-green/30 rounded-lg p-6 hover:border-terminal-green/60 transition-all duration-300 group"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-terminal-green font-mono text-lg font-bold">{title}</h3>
-        <div className={`text-xs font-mono ${statusColors[status]} uppercase`}>[{status}]</div>
+    <div className="terminal-window h-full">
+      <div className="terminal-header">
+        <div className="terminal-button bg-red-500"></div>
+        <div className="terminal-button bg-yellow-500"></div>
+        <div className="terminal-button bg-green-500"></div>
+        <div className="flex items-center gap-2 ml-4">
+          {getStatusIcon()}
+          <span className={`text-sm font-mono ${getStatusColor()}`}>{status.toUpperCase()}</span>
+        </div>
       </div>
-
-      <p className="text-gray-300 mb-4 text-sm leading-relaxed">{description}</p>
-
-      <div className="flex flex-wrap gap-2 mb-4">
-        {technologies.map((tech) => (
-          <span
-            key={tech}
-            className="text-xs bg-terminal-green/10 text-terminal-green px-2 py-1 rounded border border-terminal-green/30 font-mono"
-          >
-            {tech}
-          </span>
-        ))}
+      <div className="terminal-content h-full flex flex-col">
+        <div className="text-terminal-green font-mono text-lg mb-3">{title}</div>
+        <div className="text-gray-300 text-sm mb-4 flex-1">{description}</div>
+        <div className="mb-4">
+          <div className="text-terminal-green font-mono text-sm mb-2">TECH_STACK:</div>
+          <div className="flex flex-wrap gap-1">
+            {technologies.map((tech) => (
+              <span
+                key={tech}
+                className="px-2 py-1 bg-terminal-green/10 border border-terminal-green/30 rounded text-xs font-mono text-terminal-green"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+        <div className="flex gap-3 pt-3 border-t border-terminal-green/30">
+          {githubUrl && (
+            <a
+              href={githubUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-gray-400 hover:text-terminal-green transition-colors text-sm"
+            >
+              <Github size={16} />
+              <span className="font-mono">CODE</span>
+            </a>
+          )}
+          {liveUrl && (
+            <a
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-gray-400 hover:text-neon-cyan transition-colors text-sm"
+            >
+              <ExternalLink size={16} />
+              <span className="font-mono">LIVE</span>
+            </a>
+          )}
+        </div>
       </div>
-
-      <div className="flex gap-4">
-        {githubUrl && (
-          <a
-            href={githubUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-gray-400 hover:text-terminal-green transition-colors text-sm font-mono"
-          >
-            <Github size={16} />
-            <span>source</span>
-          </a>
-        )}
-        {liveUrl && (
-          <a
-            href={liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-gray-400 hover:text-neon-cyan transition-colors text-sm font-mono"
-          >
-            <ExternalLink size={16} />
-            <span>live</span>
-          </a>
-        )}
-      </div>
-
-      {isHovered && <div className="absolute inset-0 bg-terminal-green/5 rounded-lg pointer-events-none" />}
     </div>
   )
 }

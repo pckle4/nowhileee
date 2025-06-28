@@ -29,5 +29,27 @@ export default function GlitchText({ text, className = "" }: GlitchTextProps) {
     return () => clearInterval(glitchInterval)
   }, [text])
 
-  return <span className={`${className} transition-all duration-100`}>{glitchText}</span>
+  return (
+    <span className={`relative inline-block ${className}`} data-text={text}>
+      <span className="relative z-10">{glitchText}</span>
+      <span
+        className="absolute top-0 left-0 text-red-500 opacity-70 animate-pulse"
+        style={{
+          transform: "translate(-1px, -1px)",
+          clipPath: "polygon(0 0, 100% 0, 100% 45%, 0 45%)",
+        }}
+      >
+        {glitchText}
+      </span>
+      <span
+        className="absolute top-0 left-0 text-blue-500 opacity-70 animate-pulse"
+        style={{
+          transform: "translate(1px, 1px)",
+          clipPath: "polygon(0 55%, 100% 55%, 100% 100%, 0 100%)",
+        }}
+      >
+        {glitchText}
+      </span>
+    </span>
+  )
 }
