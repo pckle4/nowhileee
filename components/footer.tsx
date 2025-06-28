@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Code, Clock, Calendar, Globe, Zap } from "lucide-react"
+import { Heart, Code, Coffee, Clock, Calendar, Globe, Zap, Shield } from "lucide-react"
 import IPDetector from "@/components/ip-detector"
 
 export default function Footer() {
@@ -82,7 +82,7 @@ export default function Footer() {
                 <Globe className="w-4 h-4 text-cyan-400 animate-pulse" />
                 <span className="datetime-title">Live Clock</span>
               </div>
-              
+
               <div className="datetime-display">
                 <div className="datetime-item primary">
                   <Calendar className="w-4 h-4 text-emerald-400" />
@@ -91,7 +91,7 @@ export default function Footer() {
                     <span className="datetime-value">{date}</span>
                   </div>
                 </div>
-                
+
                 <div className="datetime-item primary">
                   <Clock className="w-4 h-4 text-blue-400 animate-spin-slow" />
                   <div className="datetime-content">
@@ -99,7 +99,7 @@ export default function Footer() {
                     <span className="datetime-value font-mono">{time}</span>
                   </div>
                 </div>
-                
+
                 <div className="datetime-item">
                   <Zap className="w-4 h-4 text-yellow-400 animate-pulse" />
                   <div className="datetime-content">
@@ -190,4 +190,59 @@ export default function Footer() {
             <div className="footer-contact">
               <div className="footer-contact-item">
                 <div className="footer-contact-icon">
-                  <svg className="w-4 h\
+                  <svg className="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <span className="footer-contact-text">contact@nowhile.com</span>
+              </div>
+              <div className="footer-contact-item">
+                <div className="footer-contact-icon">
+                  <Shield className="w-4 h-4 text-cyan-500 animate-pulse" />
+                </div>
+                <span className="footer-contact-text">Available Worldwide</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Enhanced Copyright Section */}
+        <div className="footer-bottom">
+          <div className="footer-copyright">
+            <div className="footer-copyright-main">
+              <span>© {new Date().getFullYear()}</span>
+              <Link href="/" className="footer-copyright-brand">
+                NoWhile.com
+              </Link>
+              <span>All rights reserved.</span>
+            </div>
+
+            <div className="footer-copyright-disclaimer">
+              <p>
+                This website and its content are protected by copyright law. Unauthorized reproduction or distribution
+                of any materials from this site is strictly prohibited.
+              </p>
+            </div>
+          </div>
+
+          <div className="footer-built-with">
+            <span>Built with</span>
+            <Heart className="w-4 h-4 text-red-500 animate-pulse" />
+            <span>using Next.js</span>
+            <Code className="w-4 h-4 text-cyan-500" />
+            <span>&</span>
+            <Coffee className="w-4 h-4 text-amber-600" />
+            <span className="footer-time-display">
+              Current time: <span className="font-mono text-cyan-400">{time}</span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
