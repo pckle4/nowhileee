@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 0%;
-    --foreground: 120 100% 50%;
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
@@ -60,11 +60,20 @@
 
 @layer base {
   * {
-    @apply border-border;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
+
   body {
-    @apply bg-black text-green-400;
-    font-family: "JetBrains Mono", "Courier New", monospace;
+    background-color: #000000;
+    color: #00ff00;
+    font-family: "Courier New", monospace;
+    overflow-x: hidden;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }
 
@@ -74,7 +83,7 @@
 }
 
 .font-mono {
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
 }
 
 /* Performance optimizations */
@@ -135,17 +144,13 @@ html {
   transform: translateY(0) !important;
 }
 
-.animate-pulse {
-  animation: blink 1s infinite;
-}
-
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #000;
+  background: #000000;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -193,6 +198,15 @@ html {
 
   .animate-spin-slow {
     animation: none;
+  }
+
+  .scanlines::before {
+    animation: none;
+  }
+
+  .cursor-blink {
+    animation: none;
+    opacity: 1;
   }
 }
 
@@ -822,7 +836,7 @@ body {
 }
 
 .footer-contact-text {
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   font-size: 0.875rem;
 }
 
@@ -980,7 +994,7 @@ body {
   min-height: 200px;
   max-height: 300px;
   overflow-y: auto;
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -989,6 +1003,23 @@ body {
   color: rgb(34, 197, 94);
   white-space: pre-wrap;
   word-wrap: break-word;
+  font-family: "Courier New", "Monaco", "Menlo", monospace;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .terminal-text {
+    font-size: 0.875rem;
+    letter-spacing: 0.25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terminal-text {
+    font-size: 0.75rem;
+    letter-spacing: 0.1px;
+  }
 }
 
 .terminal-cursor {
@@ -1030,7 +1061,7 @@ body {
 .field-label {
   color: rgb(156, 163, 175);
   font-size: 0.875rem;
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   font-weight: 500;
 }
 
@@ -1041,7 +1072,7 @@ body {
   border: 1px solid rgb(55, 65, 81);
   border-radius: 0.5rem;
   color: rgb(243, 244, 246);
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   font-size: 0.875rem;
   transition: all 0.3s ease;
 }
@@ -1075,7 +1106,7 @@ body {
   font-weight: 600;
   border: none;
   border-radius: 0.5rem;
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1202,7 +1233,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   color: rgb(17, 24, 39);
-  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
 }
 
 .dark .contact-value {
@@ -1428,6 +1459,17 @@ body {
   }
 }
 
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes logoGlow {
   0%,
   100% {
@@ -1453,120 +1495,78 @@ body {
   animation: animate-spin-slow 3s linear infinite;
 }
 
-/* ===== RESPONSIVE UTILITIES ===== */
-@media (max-width: 640px) {
-  .social-grid {
-    grid-template-columns: 1fr;
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
   }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .footer-grid {
-    gap: 2.5rem;
-  }
-
-  .hero-section {
-    min-height: auto;
-    padding-top: 5rem;
-    padding-bottom: 3rem;
-  }
-
-  .floating-icon {
-    display: none;
-  }
-
-  .hero-svg {
-    width: 60px;
-    height: 60px;
+  100% {
+    transform: translateY(4px);
   }
 }
 
-@media (max-width: 480px) {
-  .footer-container {
-    padding: 2rem 1rem;
-  }
-
-  .hero-name {
-    font-size: 1.5rem;
-  }
-
-  .hero-title {
-    font-size: 1.25rem;
-  }
-
-  .hero-description {
-    font-size: 0.875rem;
-  }
-
-  .terminal-output {
-    min-height: 150px;
-    max-height: 200px;
-  }
-
-  .contact-info-card,
-  .social-card {
-    padding: 1.5rem;
-  }
-
-  .social-icon-enhanced {
-    width: 3rem;
-    height: 3rem;
-  }
+/* ===== TERMINAL-SPECIFIC STYLES ===== */
+.scanlines::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  animation: scanlines 0.1s linear infinite;
 }
 
-/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
-@media (prefers-reduced-motion: reduce) {
-  .floating-icon,
-  .hero-svg,
-  .grid-pattern {
-    animation: none;
-  }
+.crt-effect {
+  position: relative;
+}
 
-  .footer-link,
-  .terminal-submit-button,
-  .social-link-enhanced {
-    transition: none;
-  }
+.crt-effect::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
+  pointer-events: none;
+}
 
-  .animate-spin-slow {
-    animation: none;
-  }
+.cursor-blink {
+  animation: blink 1s infinite;
+}
+
+.matrix-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.1;
+}
+
+/* ===== GREEN TERMINAL SELECTION ===== */
+::selection {
+  background-color: rgba(0, 255, 0, 0.3);
+  color: #00ff00;
+}
+
+::-moz-selection {
+  background-color: rgba(0, 255, 0, 0.3);
+  color: #00ff00;
 }
 
 /* ===== HIGH CONTRAST MODE ===== */
 @media (prefers-contrast: high) {
-  .contact-form,
-  .terminal-container,
-  .mobile-nav {
-    border-width: 2px;
+  body {
+    color: #ffffff;
   }
 
-  .footer-link {
-    text-decoration: underline;
-  }
-}
-
-/* ===== PRINT STYLES ===== */
-@media print {
-  .mobile-nav,
-  .floating-tech-icons,
-  .hero-svg-animations,
-  .terminal-container,
-  .preloader {
-    display: none;
-  }
-
-  .hero-section {
-    background: white;
-    color: black;
-    min-height: auto;
-  }
-
-  .footer-main {
-    background: white;
-    color: black;
+  .border-green-400 {
+    border-color: #ffffff;
   }
 }
 
@@ -1673,43 +1673,6 @@ body {
   color: transparent;
 }
 
-/* Terminal cursor animation */
-.terminal-cursor {
-  background: rgb(34, 197, 94);
-  color: rgb(0, 0, 0);
-  animation: blink 1s infinite;
-}
-
-/* Scanline effect */
-.terminal-scanlines::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%);
-  background-size: 100% 4px;
-  pointer-events: none;
-  animation: scanlines 0.1s linear infinite;
-}
-
-@keyframes scanlines {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(4px);
-  }
-}
-
-/* CRT glow effect */
-.terminal-glow {
-  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
-}
-
-/* Selection styling */
-::selection {
-  background: rgba(0, 255, 0, 0.3);
-  color: #00ff00;
+.glow-text {
+  text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00;
 }
