@@ -4,8 +4,8 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 0%;
+    --foreground: 120 100% 50%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
@@ -63,7 +63,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-black text-green-400;
+    font-family: "JetBrains Mono", "Courier New", monospace;
   }
 }
 
@@ -73,7 +74,7 @@
 }
 
 .font-mono {
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
 }
 
 /* Performance optimizations */
@@ -134,22 +135,26 @@ html {
   transform: translateY(0) !important;
 }
 
+.animate-pulse {
+  animation: blink 1s infinite;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #000;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(156, 163, 175, 0.5);
+  background: #00ff00;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(156, 163, 175, 0.7);
+  background: #00cc00;
 }
 
 .dark ::-webkit-scrollbar-thumb {
@@ -184,6 +189,10 @@ html {
   .terminal-submit-button,
   .social-link-enhanced {
     transition: none;
+  }
+
+  .animate-spin-slow {
+    animation: none;
   }
 }
 
@@ -813,7 +822,7 @@ body {
 }
 
 .footer-contact-text {
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
   font-size: 0.875rem;
 }
 
@@ -971,7 +980,7 @@ body {
   min-height: 200px;
   max-height: 300px;
   overflow-y: auto;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
   font-size: 0.875rem;
   line-height: 1.5;
 }
@@ -1021,7 +1030,7 @@ body {
 .field-label {
   color: rgb(156, 163, 175);
   font-size: 0.875rem;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
   font-weight: 500;
 }
 
@@ -1032,7 +1041,7 @@ body {
   border: 1px solid rgb(55, 65, 81);
   border-radius: 0.5rem;
   color: rgb(243, 244, 246);
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
   font-size: 0.875rem;
   transition: all 0.3s ease;
 }
@@ -1066,7 +1075,7 @@ body {
   font-weight: 600;
   border: none;
   border-radius: 0.5rem;
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
   font-size: 0.875rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -1193,7 +1202,7 @@ body {
   font-size: 1rem;
   font-weight: 600;
   color: rgb(17, 24, 39);
-  font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+  font-family: "JetBrains Mono", "Courier New", monospace;
 }
 
 .dark .contact-value {
@@ -1416,17 +1425,6 @@ body {
   }
   100% {
     box-shadow: 0 0 5px rgba(6, 182, 212, 0.5);
-  }
-}
-
-@keyframes blink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
   }
 }
 
@@ -1673,4 +1671,45 @@ body {
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+}
+
+/* Terminal cursor animation */
+.terminal-cursor {
+  background: rgb(34, 197, 94);
+  color: rgb(0, 0, 0);
+  animation: blink 1s infinite;
+}
+
+/* Scanline effect */
+.terminal-scanlines::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(transparent 50%, rgba(0, 255, 0, 0.03) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+  animation: scanlines 0.1s linear infinite;
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+/* CRT glow effect */
+.terminal-glow {
+  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(0, 255, 0, 0.3);
+  color: #00ff00;
 }
