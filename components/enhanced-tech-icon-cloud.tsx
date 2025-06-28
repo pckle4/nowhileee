@@ -5,84 +5,99 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { motion } from "framer-motion"
 
-interface IconData {
+const technologies = [
+  { name: "React", color: "#61DAFB" },
+  { name: "Next.js", color: "#000000" },
+  { name: "TypeScript", color: "#3178C6" },
+  { name: "JavaScript", color: "#F7DF1E" },
+  { name: "Node.js", color: "#339933" },
+  { name: "Python", color: "#3776AB" },
+  { name: "Tailwind", color: "#06B6D4" },
+  { name: "MongoDB", color: "#47A248" },
+  { name: "PostgreSQL", color: "#336791" },
+  { name: "Docker", color: "#2496ED" },
+  { name: "AWS", color: "#FF9900" },
+  { name: "Git", color: "#F05032" },
+  { name: "Figma", color: "#F24E1E" },
+  { name: "VS Code", color: "#007ACC" },
+  { name: "GraphQL", color: "#E10098" },
+  { name: "Redis", color: "#DC382D" },
+]
+
+interface TechIcon {
+  id: number
   name: string
-  icon: string
   color: string
   x: number
   y: number
   z: number
   rotationX: number
   rotationY: number
-  rotationZ: number
+  scale: number
 }
-
-const techIcons = [
-  { name: "React", icon: "⚛️", color: "#61DAFB" },
-  { name: "Next.js", icon: "▲", color: "#000000" },
-  { name: "TypeScript", icon: "TS", color: "#3178C6" },
-  { name: "JavaScript", icon: "JS", color: "#F7DF1E" },
-  { name: "Node.js", icon: "🟢", color: "#339933" },
-  { name: "Python", icon: "🐍", color: "#3776AB" },
-  { name: "Docker", icon: "🐳", color: "#2496ED" },
-  { name: "AWS", icon: "☁️", color: "#FF9900" },
-  { name: "MongoDB", icon: "🍃", color: "#47A248" },
-  { name: "PostgreSQL", icon: "🐘", color: "#336791" },
-  { name: "Redis", icon: "📦", color: "#DC382D" },
-  { name: "GraphQL", icon: "◆", color: "#E10098" },
-  { name: "Tailwind", icon: "🎨", color: "#06B6D4" },
-  { name: "Figma", icon: "🎯", color: "#F24E1E" },
-  { name: "Git", icon: "📝", color: "#F05032" },
-  { name: "VS Code", icon: "💻", color: "#007ACC" },
-]
 
 export default function EnhancedTechIconCloud() {
   const containerRef = useRef<HTMLDivElement>(null)
-  const [icons, setIcons] = useState<IconData[]>([])
-  const [isRotating, setIsRotating] = useState(true)
+  const [icons, setIcons] = useState<TechIcon[]>([])
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [isHovered, setIsHovered] = useState(false)
   const animationRef = useRef<number>()
   const rotationRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
-    // Initialize icons in 3D space
+    // Initialize icons in 3D sphere
     const radius = 150
-    const initialIcons = techIcons.map((tech, index) => {
-      const phi = Math.acos(-1 + (2 * index) / techIcons.length)
-      const theta = Math.sqrt(techIcons.length * Math.PI) * phi
+    const newIcons: TechIcon[] = technologies.map((tech, index) => {
+      const phi = Math.acos(-1 + (2 * index) / technologies.length)
+      const theta = Math.sqrt(technologies.length * Math.PI) * phi
 
       return {
-        ...tech,
+        id: index,
+        name: tech.name,
+        color: tech.color,
         x: radius * Math.cos(theta) * Math.sin(phi),
         y: radius * Math.sin(theta) * Math.sin(phi),
         z: radius * Math.cos(phi),
         rotationX: 0,
         rotationY: 0,
-        rotationZ: 0,
+        scale: 1,
       }
     })
 
-    setIcons(initialIcons)
+    setIcons(newIcons)
   }, [])
 
   useEffect(() => {
-    if (!isRotating) return
-
     const animate = () => {
-      rotationRef.current.y += 0.005
+      if (!isHovered) {
+        // Continuous rotation when not hovered
+        rotationRef.current.y += 0.005
+      }
 
       setIcons((prevIcons) =>
         prevIcons.map((icon) => {
+          // Apply rotation
           const cosY = Math.cos(rotationRef.current.y)
           const sinY = Math.sin(rotationRef.current.y)
+          const cosX = Math.cos(rotationRef.current.x)
+          const sinX = Math.sin(rotationRef.current.x)
 
-          const newX = icon.x * cosY - icon.z * sinY
-          const newZ = icon.x * sinY + icon.z * cosY
+          // Rotate around Y axis
+          const x1 = icon.x * cosY - icon.z * sinY
+          const z1 = icon.x * sinY + icon.z * cosY
+
+          // Rotate around X axis
+          const y2 = icon.y * cosX - z1 * sinX
+          const z2 = icon.y * sinX + z1 * cosX
+
+          // Calculate scale based on z position (perspective)
+          const scale = (300 + z2) / 300
 
           return {
             ...icon,
-            x: newX,
-            z: newZ,
-            rotationY: rotationRef.current.y,
+            rotationX: x1,
+            rotationY: y2,
+            scale: Math.max(0.4, Math.min(1.2, scale)),
           }
         }),
       )
@@ -90,111 +105,79 @@ export default function EnhancedTechIconCloud() {
       animationRef.current = requestAnimationFrame(animate)
     }
 
-    animationRef.current = requestAnimationFrame(animate)
+    animate()
 
     return () => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
     }
-  }, [isRotating])
-
-  const handleMouseEnter = () => {
-    setIsRotating(false)
-  }
-
-  const handleMouseLeave = () => {
-    setIsRotating(true)
-  }
+  }, [isHovered])
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!containerRef.current || isRotating) return
+    if (!containerRef.current) return
 
     const rect = containerRef.current.getBoundingClientRect()
     const centerX = rect.left + rect.width / 2
     const centerY = rect.top + rect.height / 2
 
-    const mouseX = e.clientX - centerX
-    const mouseY = e.clientY - centerY
+    const mouseX = (e.clientX - centerX) / rect.width
+    const mouseY = (e.clientY - centerY) / rect.height
 
-    const rotationY = (mouseX / rect.width) * 2
-    const rotationX = -(mouseY / rect.height) * 2
+    setMousePosition({ x: mouseX, y: mouseY })
 
-    setIcons((prevIcons) =>
-      prevIcons.map((icon) => {
-        // Apply mouse-based rotation
-        const cosY = Math.cos(rotationY)
-        const sinY = Math.sin(rotationY)
-        const cosX = Math.cos(rotationX)
-        const sinX = Math.sin(rotationX)
+    // Update rotation based on mouse position
+    rotationRef.current.x = mouseY * 0.5
+    rotationRef.current.y += mouseX * 0.01
+  }
 
-        // Rotate around Y axis
-        const newX = icon.x * cosY - icon.z * sinY
-        let newZ = icon.x * sinY + icon.z * cosY
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+  }
 
-        // Rotate around X axis
-        const newY = icon.y * cosX - newZ * sinX
-        newZ = icon.y * sinX + newZ * cosX
-
-        return {
-          ...icon,
-          x: newX,
-          y: newY,
-          z: newZ,
-        }
-      }),
-    )
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    // Smoothly return to center
+    rotationRef.current.x *= 0.95
   }
 
   return (
     <div
       ref={containerRef}
       className="relative w-80 h-80 mx-auto cursor-grab active:cursor-grabbing"
+      onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onMouseMove={handleMouseMove}
     >
-      <div className="absolute inset-0 flex items-center justify-center">
-        {icons.map((icon, index) => {
-          const scale = (icon.z + 200) / 400 // Perspective scaling
-          const opacity = (icon.z + 200) / 400 // Depth-based opacity
-          const zIndex = Math.round(icon.z + 200)
+      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-500/10 to-purple-500/10 backdrop-blur-sm"></div>
 
-          return (
-            <motion.div
-              key={`${icon.name}-${index}`}
-              className="absolute flex items-center justify-center"
-              style={{
-                transform: `translate3d(${icon.x}px, ${icon.y}px, 0px) scale(${scale})`,
-                opacity: Math.max(0.3, opacity),
-                zIndex,
-              }}
-              whileHover={{
-                scale: scale * 1.2,
-                transition: { duration: 0.2 },
-              }}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: Math.max(0.3, opacity), scale }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-            >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg backdrop-blur-sm border border-white/20 transition-all duration-300 hover:shadow-xl"
-                style={{
-                  backgroundColor: `${icon.color}20`,
-                  color: icon.color,
-                  boxShadow: `0 4px 20px ${icon.color}40`,
-                }}
-              >
-                {icon.icon}
-              </div>
-            </motion.div>
-          )
-        })}
-      </div>
+      {icons.map((icon) => (
+        <motion.div
+          key={icon.id}
+          className="absolute w-12 h-12 flex items-center justify-center rounded-lg backdrop-blur-sm border border-white/20 shadow-lg"
+          style={{
+            left: "50%",
+            top: "50%",
+            transform: `translate(-50%, -50%) translate3d(${icon.rotationX}px, ${icon.rotationY}px, 0) scale(${icon.scale})`,
+            zIndex: Math.round(icon.scale * 100),
+            opacity: icon.scale,
+            background: `linear-gradient(135deg, ${icon.color}20, ${icon.color}10)`,
+          }}
+          whileHover={{
+            scale: icon.scale * 1.2,
+            rotateY: 180,
+            transition: { type: "spring", stiffness: 300, damping: 25 },
+          }}
+        >
+          <span className="text-xs font-bold" style={{ color: icon.color }}>
+            {icon.name.slice(0, 2)}
+          </span>
+        </motion.div>
+      ))}
 
       {/* Center glow effect */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="w-4 h-4 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-full opacity-50 animate-pulse" />
+        <div className="w-4 h-4 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full animate-pulse"></div>
       </div>
     </div>
   )

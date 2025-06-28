@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useTheme } from "next-themes"
-import { Menu, X, Home, Briefcase, Code, Mail, FileText, Hand } from "lucide-react"
+import { Home, Briefcase, Code, Mail, FileText, Hand } from "lucide-react"
 import ThemeToggle from "@/components/theme-toggle"
 
 export default function Header() {
@@ -13,7 +13,6 @@ export default function Header() {
   const handRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLElement>(null)
   const [isScrolled, setIsScrolled] = useState(false)
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
   const { theme } = useTheme()
 
@@ -63,13 +62,7 @@ export default function Header() {
     }
   }, [])
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
-
   const scrollToSection = (sectionId: string) => {
-    setIsMobileMenuOpen(false)
-
     // Check if we're on the resume page
     if (window.location.pathname === "/resume") {
       // Navigate to home page first, then scroll
@@ -80,19 +73,6 @@ export default function Header() {
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
-  const handleNavigation = (path: string, sectionId?: string) => {
-    setIsMobileMenuOpen(false)
-
-    if (sectionId) {
-      scrollToSection(sectionId)
-    } else {
-      // For direct navigation like resume
-      if (path !== window.location.pathname) {
-        window.location.href = path
-      }
     }
   }
 
@@ -173,42 +153,8 @@ export default function Header() {
           {/* Right Side Controls */}
           <div className="flex items-center gap-4">
             <ThemeToggle />
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={toggleMobileMenu}
-              className="md:hidden p-2 rounded-lg bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors duration-200"
-              aria-label="Toggle mobile menu"
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-200 dark:border-slate-700 py-4 animate-in slide-in-from-top duration-300">
-            <div className="flex flex-col space-y-2 px-4">
-              {navItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={item.action}
-                  className="flex items-center gap-3 text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors duration-200 group"
-                >
-                  <item.icon className="w-4 h-4 text-cyan-500 group-hover:scale-110 transition-transform duration-200" />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-              <button
-                onClick={() => handleNavigation("/resume")}
-                className="flex items-center gap-3 text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition-colors duration-200 group"
-              >
-                <FileText className="w-4 h-4 text-cyan-500 group-hover:scale-110 transition-transform duration-200" />
-                <span>Resume</span>
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </header>
   )

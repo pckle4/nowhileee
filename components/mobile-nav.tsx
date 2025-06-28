@@ -44,7 +44,7 @@ export default function MobileNav() {
       }
     }
 
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     handleScroll()
 
     return () => window.removeEventListener("scroll", handleScroll)
@@ -67,13 +67,22 @@ export default function MobileNav() {
     <AnimatePresence>
       {isVisible && (
         <motion.nav
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          initial={{ y: 100, opacity: 0, scale: 0.8 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          exit={{ y: 100, opacity: 0, scale: 0.8 }}
+          transition={{
+            type: "spring",
+            stiffness: 400,
+            damping: 25,
+            mass: 0.8,
+          }}
           className="fixed bottom-4 left-4 right-4 z-50"
         >
-          <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl px-4 py-3 shadow-2xl">
+          <motion.div
+            className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl px-4 py-3 shadow-2xl"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          >
             <div className="flex items-center justify-around">
               {navItems.map((item, index) => {
                 const Icon = item.icon
@@ -86,37 +95,100 @@ export default function MobileNav() {
                     key={item.href}
                     onClick={() => handleNavClick(item.href)}
                     className="relative p-3 rounded-xl transition-all duration-300"
-                    whileTap={{ scale: 0.9 }}
-                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.85 }}
+                    whileHover={{ scale: 1.15, y: -2 }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: index * 0.1,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 20,
+                    }}
                   >
                     <motion.div
                       className="absolute inset-0 rounded-xl"
                       animate={{
                         background: isActive
-                          ? "linear-gradient(135deg, rgba(6, 182, 212, 0.3), rgba(59, 130, 246, 0.3))"
+                          ? "linear-gradient(135deg, rgba(6, 182, 212, 0.4), rgba(59, 130, 246, 0.4))"
                           : "transparent",
+                        scale: isActive ? 1 : 0.8,
                       }}
-                      transition={{ duration: 0.3 }}
+                      transition={{
+                        duration: 0.3,
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25,
+                      }}
                     />
 
-                    <Icon
-                      className={`w-6 h-6 relative z-10 transition-colors duration-300 ${
-                        isActive ? "text-cyan-400" : "text-gray-400"
-                      }`}
-                    />
+                    <motion.div
+                      animate={{
+                        rotate: isActive ? [0, -10, 10, 0] : 0,
+                      }}
+                      transition={{
+                        duration: 0.6,
+                        ease: "easeInOut",
+                      }}
+                    >
+                      <Icon
+                        className={`w-6 h-6 relative z-10 transition-all duration-300 ${
+                          isActive ? "text-cyan-400 drop-shadow-lg" : "text-gray-400"
+                        }`}
+                      />
+                    </motion.div>
 
                     {isActive && (
                       <motion.div
                         layoutId="activeIndicator"
-                        className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-cyan-400 rounded-full"
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-cyan-400 rounded-full shadow-lg"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 25,
+                          delay: 0.1,
+                        }}
                       />
                     )}
+
+                    {/* Ripple effect on tap */}
+                    <motion.div
+                      className="absolute inset-0 rounded-xl bg-cyan-400/20"
+                      initial={{ scale: 0, opacity: 0 }}
+                      whileTap={{ scale: 2, opacity: [0, 1, 0] }}
+                      transition={{ duration: 0.3 }}
+                    />
                   </motion.button>
                 )
               })}
             </div>
-          </div>
+
+            {/* Floating particles effect */}
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
+                  animate={{
+                    x: [0, Math.random() * 100 - 50],
+                    y: [0, Math.random() * 20 - 10],
+                    opacity: [0, 1, 0],
+                  }}
+                  transition={{
+                    duration: 2 + Math.random() * 2,
+                    repeat: Number.POSITIVE_INFINITY,
+                    delay: Math.random() * 2,
+                  }}
+                  style={{
+                    left: `${20 + i * 20}%`,
+                    top: "50%",
+                  }}
+                />
+              ))}
+            </div>
+          </motion.div>
         </motion.nav>
       )}
     </AnimatePresence>

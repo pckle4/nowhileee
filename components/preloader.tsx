@@ -1,38 +1,56 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Code, Palette, Lightbulb, Rocket, Sparkles } from "lucide-react"
 
-export default function Preloader() {
-  const [isLoading, setIsLoading] = useState(true)
-  const [currentStep, setCurrentStep] = useState(0)
+const steps = [
+  { icon: Code, label: "Initializing", color: "text-cyan-400" },
+  { icon: Palette, label: "Designing", color: "text-purple-400" },
+  { icon: Lightbulb, label: "Innovating", color: "text-yellow-400" },
+  { icon: Rocket, label: "Launching", color: "text-green-400" },
+  { icon: Sparkles, label: "Perfecting", color: "text-pink-400" },
+]
 
-  const steps = [
-    { icon: Code, text: "Initializing Code", color: "#00ffff" },
-    { icon: Palette, text: "Loading Design", color: "#8b5cf6" },
-    { icon: Lightbulb, text: "Generating Ideas", color: "#eab308" },
-    { icon: Rocket, text: "Launching Experience", color: "#f97316" },
-    { icon: Sparkles, text: "Adding Magic", color: "#ec4899" },
-  ]
+export default function Preloader() {
+  const [currentStep, setCurrentStep] = useState(0)
+  const [isComplete, setIsComplete] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    const stepDuration = 600
+    const totalSteps = steps.length
+
+    const interval = setInterval(() => {
       setCurrentStep((prev) => {
-        if (prev < steps.length - 1) {
+        if (prev < totalSteps - 1) {
           return prev + 1
         } else {
-          clearInterval(timer)
-          setTimeout(() => setIsLoading(false), 800)
+          clearInterval(interval)
+          setTimeout(() => setIsComplete(true), 500)
           return prev
         }
       })
-    }, 600)
+    }, stepDuration)
 
-    return () => clearInterval(timer)
+    // Progress animation
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev < 100) {
+          return prev + 2
+        }
+        clearInterval(progressInterval)
+        return 100
+      })
+    }, 60)
+
+    return () => {
+      clearInterval(interval)
+      clearInterval(progressInterval)
+    }
   }, [])
 
-  if (!isLoading) return null
+  if (isComplete) return null
 
   return (
     <AnimatePresence>
@@ -40,82 +58,94 @@ export default function Preloader() {
         initial={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.5 }}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+        className="fixed inset-0 z-[9999] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center"
       >
-        <div className="text-center">
+        {/* Background particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-cyan-400/30 rounded-full"
+              animate={{
+                x: [0, Math.random() * window.innerWidth],
+                y: [0, Math.random() * window.innerHeight],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Number.POSITIVE_INFINITY,
+                delay: Math.random() * 2,
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="relative z-10 text-center">
+          {/* Main icon animation */}
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 0.5, type: "spring" }}
-            className="relative mb-8"
+            className="mb-8 relative"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
           >
-            <div className="w-32 h-32 mx-auto relative">
+            <div className="w-24 h-24 mx-auto relative">
               {steps.map((step, index) => {
                 const Icon = step.icon
+                const angle = (index / steps.length) * 360
                 const isActive = index <= currentStep
-                const angle = index * 72 - 90 // 360/5 = 72 degrees between each icon
-                const radius = 40
-                const x = Math.cos((angle * Math.PI) / 180) * radius
-                const y = Math.sin((angle * Math.PI) / 180) * radius
 
                 return (
                   <motion.div
                     key={index}
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    className={`absolute w-12 h-12 flex items-center justify-center rounded-full ${
+                      isActive ? "bg-white/10" : "bg-white/5"
+                    }`}
                     style={{
-                      transform: `translate(${x}px, ${y}px) translate(-50%, -50%)`,
+                      top: "50%",
+                      left: "50%",
+                      transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(-40px)`,
                     }}
-                    initial={{ scale: 0, opacity: 0 }}
                     animate={{
-                      scale: isActive ? 1 : 0.5,
-                      opacity: isActive ? 1 : 0.3,
+                      scale: isActive ? 1.2 : 1,
+                      opacity: isActive ? 1 : 0.5,
                     }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <div
-                      className="w-12 h-12 rounded-full flex items-center justify-center"
-                      style={{
-                        background: isActive ? step.color : "rgba(255,255,255,0.1)",
-                        boxShadow: isActive ? `0 0 20px ${step.color}` : "none",
-                      }}
-                    >
-                      <Icon className="w-6 h-6" style={{ color: isActive ? "white" : "#666" }} />
-                    </div>
+                    <Icon className={`w-6 h-6 ${isActive ? step.color : "text-gray-500"}`} />
                   </motion.div>
                 )
               })}
-
-              {/* Center logo */}
-              <motion.div
-                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-              >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-r from-cyan-400 to-purple-600 flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">A</span>
-                </div>
-              </motion.div>
             </div>
           </motion.div>
 
-          <motion.div
+          {/* Current step label */}
+          <motion.h2
             key={currentStep}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="text-white"
+            className="text-2xl font-bold text-white mb-4"
           >
-            <h2 className="text-2xl font-bold mb-2">{steps[currentStep]?.text}</h2>
-            <div className="w-64 h-2 bg-gray-700 rounded-full mx-auto overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-cyan-400 to-purple-600"
-                initial={{ width: 0 }}
-                animate={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-          </motion.div>
+            {steps[currentStep]?.label}
+          </motion.h2>
+
+          {/* Progress bar */}
+          <div className="w-64 h-2 bg-white/10 rounded-full mx-auto mb-4 overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.1 }}
+            />
+          </div>
+
+          {/* Progress percentage */}
+          <motion.p
+            className="text-gray-400 font-mono"
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY }}
+          >
+            {progress}%
+          </motion.p>
         </div>
       </motion.div>
     </AnimatePresence>

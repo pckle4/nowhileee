@@ -11,35 +11,32 @@ import MobileNav from "@/components/mobile-nav"
 import Preloader from "@/components/preloader"
 
 export default function HomePage() {
-  const [isLoaded, setIsLoaded] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
     // Simulate loading time
     const timer = setTimeout(() => {
-      setIsLoaded(true)
-    }, 3000)
+      setIsLoading(false)
+    }, 3500)
 
     return () => clearTimeout(timer)
   }, [])
 
+  if (isLoading) {
+    return <Preloader />
+  }
+
   return (
-    <>
-      <Preloader />
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-blue-900">
-        <Header />
-        <main>
-          <EnhancedHeroSection />
-          <div id="about">
-            <SkillsSection />
-          </div>
-          <div id="projects">
-            <ProjectsSection />
-          </div>
-          <EnhancedContactSection />
-        </main>
-        <Footer />
-        <MobileNav />
-      </div>
-    </>
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <EnhancedHeroSection />
+        <ProjectsSection />
+        <SkillsSection />
+        <EnhancedContactSection />
+      </main>
+      <Footer />
+      <MobileNav />
+    </div>
   )
 }
