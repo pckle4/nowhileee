@@ -33,9 +33,8 @@ export default function ContactSection() {
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [terminalText, setTerminalText] = useState("")
   const [showCursor, setShowCursor] = useState(true)
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
-  const [submissionData, setSubmissionData] = useState<any>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const socialLinks = [
     {
@@ -64,19 +63,25 @@ export default function ContactSection() {
     },
   ]
 
-  // Terminal typing animation
+  // Enhanced terminal typing animation
   useEffect(() => {
-    if (isSubmitted) return
-
     const messages = [
       "$ whoami",
       "> ansh_shah",
       "$ cat skills.txt",
       "> Full Stack Developer",
       "> React | Next.js | Node.js",
-      "> Always learning...",
-      "$ echo 'Let\\'s build something amazing!'",
-      "> Let's build something amazing!",
+      "> TypeScript | Python | AWS",
+      "> Always learning new technologies...",
+      "$ echo 'Ready to build something amazing!'",
+      "> Ready to build something amazing!",
+      "$ git status",
+      "> On branch main",
+      "> Your project is up to date.",
+      "$ npm run dev",
+      "> Starting development server...",
+      "> ✓ Ready in 1.2s",
+      "> ▲ Next.js running on http://localhost:3000",
       "$ _",
     ]
 
@@ -92,13 +97,13 @@ export default function ContactSection() {
           currentMessage += fullMessage[charIndex]
           setTerminalText(currentMessage)
           charIndex++
-          setTimeout(typeMessage, Math.random() * 100 + 50)
+          setTimeout(typeMessage, Math.random() * 50 + 25)
         } else {
           currentMessage += "\n"
           setTerminalText(currentMessage)
           messageIndex++
           charIndex = 0
-          setTimeout(typeMessage, 1000)
+          setTimeout(typeMessage, messageIndex === messages.length - 1 ? 2000 : 800)
         }
       }
     }
@@ -114,7 +119,7 @@ export default function ContactSection() {
       clearTimeout(timer)
       clearInterval(cursorInterval)
     }
-  }, [isSubmitted])
+  }, [])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -144,65 +149,40 @@ export default function ContactSection() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-
-    const timestamp = new Date().toLocaleString()
-    const submissionId = Math.random().toString(36).substr(2, 9).toUpperCase()
-
-    setSubmissionData({
-      ...formData,
-      timestamp,
-      submissionId,
-      status: "success",
-    })
-
-    // Show terminal submission details
-    const submissionText = `$ contact_form --submit
-> Processing form data...
-> ================================
-> SUBMISSION SUCCESSFUL
-> ================================
-> ID: ${submissionId}
-> Name: ${formData.name}
-> Email: ${formData.email}
-> Subject: ${formData.subject}
-> Message: ${formData.message.substring(0, 50)}${formData.message.length > 50 ? "..." : ""}
-> Timestamp: ${timestamp}
-> Status: ✅ DELIVERED
-> ================================
-> Thank you for reaching out!
-> I'll get back to you soon.
-> ================================
-$ _`
-
-    setTerminalText(submissionText)
     setIsSubmitted(true)
-    setIsSubmitting(false)
 
-    // Reset form after 10 seconds
+    // Simulate form submission
     setTimeout(() => {
-      setIsSubmitted(false)
-      setFormData({ name: "", email: "", subject: "", message: "" })
-      setSubmissionData(null)
-    }, 10000)
+      setShowSuccess(true)
+
+      // Update terminal with success message
+      const successMessage = `\n$ submit_form\n> Processing form data...\n> ✓ Message sent successfully!\n> Form Details:\n>   Name: ${formData.name}\n>   Email: ${formData.email}\n>   Subject: ${formData.subject}\n>   Message: ${formData.message.substring(0, 50)}${formData.message.length > 50 ? "..." : ""}\n> \n> Thank you ${formData.name}!\n> I'll get back to you soon.\n> $ _`
+      setTerminalText((prev) => prev + successMessage)
+
+      // Reset form after showing success
+      setTimeout(() => {
+        setIsSubmitted(false)
+        setShowSuccess(false)
+        setFormData({ name: "", email: "", subject: "", message: "" })
+      }, 5000)
+    }, 2000)
   }
 
   return (
-    <section id="contact" ref={sectionRef} className="contact-section-enhanced">
+    <section id="contact" ref={sectionRef} className="py-20 lg:py-32 relative">
       {/* Background with glassmorphism */}
-      <div className="contact-background-overlay"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-gray-50/80 to-white/80 dark:from-slate-900/50 dark:to-slate-800/50"></div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div ref={titleRef} className="text-center mb-16 opacity-0 translate-y-8 transition-all duration-700 ease-out">
-          <h2 className="contact-title">
-            <span className="contact-title-gradient">Let's Connect</span>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-6 font-inter">
+            <span className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Let's Connect
+            </span>
           </h2>
-          <p className="contact-subtitle">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto font-inter">
             Ready to bring your ideas to life? Let's discuss your next project and create something amazing together.
           </p>
         </div>
@@ -211,155 +191,159 @@ $ _`
           {/* Enhanced Terminal-Style Contact Form */}
           <div
             ref={formRef}
-            className="terminal-container-enhanced opacity-0 translate-y-8 transition-all duration-700 ease-out"
+            className="terminal-container opacity-0 translate-y-8 transition-all duration-700 ease-out"
           >
             {/* Terminal Header */}
-            <div className="terminal-header-enhanced">
+            <div className="terminal-header">
               <div className="terminal-controls">
-                <div className="terminal-dot terminal-dot-red"></div>
-                <div className="terminal-dot terminal-dot-yellow"></div>
-                <div className="terminal-dot terminal-dot-green"></div>
+                <div className="control-button close"></div>
+                <div className="control-button minimize"></div>
+                <div className="control-button maximize"></div>
               </div>
               <div className="terminal-title">
                 <Terminal className="w-4 h-4 text-gray-400" />
-                <span className="terminal-title-text">contact@nowhile.com</span>
+                <span className="text-gray-400 text-sm font-mono">contact@nowhile.com</span>
               </div>
             </div>
 
             {/* Terminal Content */}
-            <div className="terminal-content-enhanced">
-              {/* Terminal Output */}
-              <div ref={terminalRef} className="terminal-output-enhanced">
-                <pre className="terminal-pre">
+            <div className="terminal-content">
+              {/* Enhanced Terminal Output */}
+              <div ref={terminalRef} className="terminal-output">
+                <pre className="terminal-text">
                   {terminalText}
-                  {!isSubmitted && showCursor && <span className="terminal-cursor">█</span>}
+                  {showCursor && <span className="terminal-cursor">█</span>}
                 </pre>
               </div>
 
-              {/* Contact Form */}
-              {!isSubmitted && (
-                <form onSubmit={handleSubmit} className="terminal-form-enhanced">
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="terminal-input-group">
-                      <div className="terminal-input-label">
-                        <User className="w-4 h-4 text-cyan-400" />
-                        <label className="terminal-label">name</label>
-                      </div>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField("name")}
-                        onBlur={() => setFocusedField(null)}
-                        className="terminal-input-enhanced"
-                        placeholder="your_name"
-                        required
-                      />
-                    </div>
-                    <div className="terminal-input-group">
-                      <div className="terminal-input-label">
-                        <Mail className="w-4 h-4 text-cyan-400" />
-                        <label className="terminal-label">email</label>
-                      </div>
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        onFocus={() => setFocusedField("email")}
-                        onBlur={() => setFocusedField(null)}
-                        className="terminal-input-enhanced"
-                        placeholder="you@example.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="terminal-input-group">
-                    <div className="terminal-input-label">
-                      <Zap className="w-4 h-4 text-cyan-400" />
-                      <label className="terminal-label">subject</label>
+              {/* Enhanced Contact Form */}
+              <form onSubmit={handleSubmit} className="terminal-form">
+                <div className="form-grid">
+                  <div className="form-field">
+                    <div className="field-header">
+                      <User className="w-4 h-4 text-cyan-400" />
+                      <label className="field-label">name</label>
                     </div>
                     <input
                       type="text"
-                      name="subject"
-                      value={formData.subject}
+                      name="name"
+                      value={formData.name}
                       onChange={handleInputChange}
-                      onFocus={() => setFocusedField("subject")}
+                      onFocus={() => setFocusedField("name")}
                       onBlur={() => setFocusedField(null)}
-                      className="terminal-input-enhanced"
-                      placeholder="project_discussion"
+                      className="terminal-input"
+                      placeholder="your_name"
                       required
+                      disabled={isSubmitted}
                     />
                   </div>
 
-                  <div className="terminal-input-group">
-                    <div className="terminal-input-label">
-                      <MessageSquare className="w-4 h-4 text-cyan-400" />
-                      <label className="terminal-label">message</label>
+                  <div className="form-field">
+                    <div className="field-header">
+                      <Mail className="w-4 h-4 text-cyan-400" />
+                      <label className="field-label">email</label>
                     </div>
-                    <textarea
-                      rows={5}
-                      name="message"
-                      value={formData.message}
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
                       onChange={handleInputChange}
-                      onFocus={() => setFocusedField("message")}
+                      onFocus={() => setFocusedField("email")}
                       onBlur={() => setFocusedField(null)}
-                      className="terminal-textarea-enhanced"
-                      placeholder="tell_me_about_your_project..."
+                      className="terminal-input"
+                      placeholder="you@example.com"
                       required
-                    ></textarea>
+                      disabled={isSubmitted}
+                    />
                   </div>
-
-                  <button type="submit" disabled={isSubmitting} className="terminal-submit-enhanced">
-                    {isSubmitting ? (
-                      <>
-                        <div className="terminal-loading-spinner" />
-                        ./processing...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
-                        ./send_message
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-
-              {/* Success Message */}
-              {isSubmitted && (
-                <div className="terminal-success-message">
-                  <CheckCircle className="w-6 h-6 text-green-400 animate-pulse" />
-                  <span className="text-green-400 font-mono">Message sent successfully!</span>
                 </div>
-              )}
+
+                <div className="form-field">
+                  <div className="field-header">
+                    <Zap className="w-4 h-4 text-cyan-400" />
+                    <label className="field-label">subject</label>
+                  </div>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    onFocus={() => setFocusedField("subject")}
+                    onBlur={() => setFocusedField(null)}
+                    className="terminal-input"
+                    placeholder="project_discussion"
+                    required
+                    disabled={isSubmitted}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <div className="field-header">
+                    <MessageSquare className="w-4 h-4 text-cyan-400" />
+                    <label className="field-label">message</label>
+                  </div>
+                  <textarea
+                    rows={5}
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    onFocus={() => setFocusedField("message")}
+                    onBlur={() => setFocusedField(null)}
+                    className="terminal-input terminal-textarea"
+                    placeholder="tell_me_about_your_project..."
+                    required
+                    disabled={isSubmitted}
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitted}
+                  className={`terminal-submit-button ${isSubmitted ? "submitting" : ""} ${showSuccess ? "success" : ""}`}
+                >
+                  {showSuccess ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      ./message_sent
+                    </>
+                  ) : isSubmitted ? (
+                    <>
+                      <div className="submit-spinner"></div>
+                      ./sending_message
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
+                      ./send_message
+                    </>
+                  )}
+                </button>
+              </form>
             </div>
           </div>
 
-          {/* Enhanced Contact Info & Social */}
+          {/* Contact Info & Social */}
           <div
             ref={socialRef}
             className="space-y-8 opacity-0 translate-y-8 transition-all duration-700 ease-out"
             style={{ animationDelay: "200ms" }}
           >
             {/* Contact Info */}
-            <div className="contact-info-card-enhanced">
-              <h3 className="contact-info-title">Get In Touch</h3>
-              <div className="contact-info-items">
-                <div className="contact-info-item-enhanced">
-                  <div className="contact-info-icon-enhanced neon-cyan">
-                    <AtSign className="w-6 h-6" />
+            <div className="contact-info-card">
+              <h3 className="contact-card-title">Get In Touch</h3>
+              <div className="contact-items">
+                <div className="contact-item">
+                  <div className="contact-icon">
+                    <AtSign className="w-6 h-6 text-cyan-500" />
                   </div>
                   <div>
-                    <p className="contact-info-label">Email</p>
-                    <p className="contact-info-value">theanshshah@gmail.com</p>
+                    <p className="contact-label">Email</p>
+                    <p className="contact-value">theanshshah@gmail.com</p>
                   </div>
                 </div>
-                <div className="contact-info-item-enhanced">
-                  <div className="contact-info-icon-enhanced neon-purple">
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="contact-item">
+                  <div className="contact-icon">
+                    <svg className="w-6 h-6 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -375,17 +359,17 @@ $ _`
                     </svg>
                   </div>
                   <div>
-                    <p className="contact-info-label">Location</p>
-                    <p className="contact-info-value">Vadodara, Gujarat</p>
+                    <p className="contact-label">Location</p>
+                    <p className="contact-value">Vadodara, Gujarat</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Enhanced Social Links */}
-            <div className="social-links-card-enhanced">
-              <h3 className="social-links-title">Connect With Me</h3>
-              <div className="social-links-grid">
+            {/* Enhanced Connect With Me */}
+            <div className="social-card">
+              <h3 className="contact-card-title">Connect With Me</h3>
+              <div className="social-grid">
                 {socialLinks.map((social) => (
                   <a
                     key={social.name}
@@ -397,19 +381,16 @@ $ _`
                     onMouseLeave={() => setHoveredIcon(null)}
                   >
                     <div
-                      className={`social-icon-enhanced ${hoveredIcon === social.name ? "social-icon-hovered" : ""}`}
+                      className={`social-icon-enhanced ${hoveredIcon === social.name ? "hovered" : ""}`}
                       style={{
                         backgroundColor: hoveredIcon === social.name ? social.color : undefined,
+                        color: hoveredIcon === social.name ? "white" : "#6b7280",
                         boxShadow: hoveredIcon === social.name ? `0 20px 40px ${social.color}40` : undefined,
                       }}
                     >
                       <social.icon className="w-8 h-8" />
                     </div>
-                    <span
-                      className={`social-name-enhanced ${hoveredIcon === social.name ? "social-name-hovered" : ""}`}
-                    >
-                      {social.name}
-                    </span>
+                    <span className={`social-name ${hoveredIcon === social.name ? "active" : ""}`}>{social.name}</span>
                   </a>
                 ))}
               </div>

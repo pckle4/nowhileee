@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { Heart, Code, Coffee, Clock, Calendar } from "lucide-react"
+import { Code, Clock, Calendar, Globe, Zap } from "lucide-react"
 import IPDetector from "@/components/ip-detector"
 
 export default function Footer() {
@@ -50,20 +50,22 @@ export default function Footer() {
         minute: "2-digit",
         second: "2-digit",
       }),
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }
   }
 
-  const { date, time } = formatDateTime(currentDateTime)
+  const { date, time, timezone } = formatDateTime(currentDateTime)
 
   return (
     <footer ref={footerRef} className="footer-main opacity-0 translate-y-8 transition-all duration-700 ease-out">
       <div className="footer-container">
         <div className="footer-grid">
-          {/* Brand Section */}
+          {/* Enhanced Brand Section */}
           <div className="footer-brand">
             <div className="footer-brand-header">
               <div className="footer-logo">
                 <Code className="w-5 h-5 text-white" />
+                <div className="logo-glow"></div>
               </div>
               <h3 className="footer-brand-title">
                 <span className="footer-brand-gradient">NoWhile.com</span>
@@ -74,7 +76,41 @@ export default function Footer() {
               code. Specializing in modern web technologies and user-centered design.
             </p>
 
-            {/* IP Detector */}
+            {/* Enhanced Current Date & Time Display */}
+            <div className="footer-datetime-enhanced">
+              <div className="datetime-header">
+                <Globe className="w-4 h-4 text-cyan-400 animate-pulse" />
+                <span className="datetime-title">Live Clock</span>
+              </div>
+              
+              <div className="datetime-display">
+                <div className="datetime-item primary">
+                  <Calendar className="w-4 h-4 text-emerald-400" />
+                  <div className="datetime-content">
+                    <span className="datetime-label">Date</span>
+                    <span className="datetime-value">{date}</span>
+                  </div>
+                </div>
+                
+                <div className="datetime-item primary">
+                  <Clock className="w-4 h-4 text-blue-400 animate-spin-slow" />
+                  <div className="datetime-content">
+                    <span className="datetime-label">Time</span>
+                    <span className="datetime-value font-mono">{time}</span>
+                  </div>
+                </div>
+                
+                <div className="datetime-item">
+                  <Zap className="w-4 h-4 text-yellow-400 animate-pulse" />
+                  <div className="datetime-content">
+                    <span className="datetime-label">Timezone</span>
+                    <span className="datetime-value font-mono text-sm">{timezone}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Enhanced IP Detector */}
             <div className="footer-ip-section">
               <IPDetector />
             </div>
@@ -148,88 +184,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Enhanced Contact Info */}
           <div className="footer-section">
             <h4 className="footer-section-title">Get In Touch</h4>
             <div className="footer-contact">
               <div className="footer-contact-item">
                 <div className="footer-contact-icon">
-                  <svg className="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <span className="footer-contact-text">contact@nowhile.com</span>
-              </div>
-              <div className="footer-contact-item">
-                <div className="footer-contact-icon">
-                  <svg className="w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                </div>
-                <span className="footer-contact-text">Available Worldwide</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Copyright Section */}
-        <div className="footer-bottom">
-          <div className="footer-copyright">
-            <div className="footer-copyright-main">
-              <span>© {new Date().getFullYear()}</span>
-              <Link href="/" className="footer-copyright-brand">
-                NoWhile.com
-              </Link>
-              <span>All rights reserved.</span>
-            </div>
-
-            <div className="footer-copyright-disclaimer">
-              <p>
-                This website and its content are protected by copyright law. Unauthorized reproduction or distribution
-                of any materials from this site is strictly prohibited.
-              </p>
-            </div>
-
-            {/* Current Date & Time as Text */}
-            <div className="footer-datetime-text">
-              <span className="datetime-item">
-                <Calendar className="w-3 h-3 text-violet-500" />
-                {date}
-              </span>
-              <span className="datetime-separator">•</span>
-              <span className="datetime-item">
-                <Clock className="w-3 h-3 text-emerald-500" />
-                {time}
-              </span>
-            </div>
-          </div>
-
-          <div className="footer-built-with">
-            <span>Built with</span>
-            <Heart className="w-4 h-4 text-red-500 animate-pulse" />
-            <span>using Next.js</span>
-            <Code className="w-4 h-4 text-cyan-500" />
-            <span>&</span>
-            <Coffee className="w-4 h-4 text-amber-600" />
-          </div>
-        </div>
-      </div>
-    </footer>
-  )
-}
+                  <svg className="w-4 h\

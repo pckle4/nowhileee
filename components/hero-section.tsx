@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react"
 import Link from "next/link"
 import TechIconCloud from "@/components/tech-icon-cloud"
-import AnimatedTechIcons from "@/components/animated-tech-icons"
+import { Code, Zap, Cpu, Database, Globe, Rocket, Binary, Terminal } from "lucide-react"
 
 export default function HeroSection() {
   const heroRef = useRef<HTMLDivElement>(null)
@@ -11,6 +11,7 @@ export default function HeroSection() {
   const titleRef = useRef<HTMLHeadingElement>(null)
   const descRef = useRef<HTMLParagraphElement>(null)
   const buttonsRef = useRef<HTMLDivElement>(null)
+  const gridRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -37,24 +38,91 @@ export default function HeroSection() {
     }
   }, [])
 
+  const techIcons = [
+    { Icon: Code, color: "text-blue-400", delay: "0s" },
+    { Icon: Zap, color: "text-yellow-400", delay: "0.5s" },
+    { Icon: Cpu, color: "text-purple-400", delay: "1s" },
+    { Icon: Database, color: "text-green-400", delay: "1.5s" },
+    { Icon: Globe, color: "text-cyan-400", delay: "2s" },
+    { Icon: Rocket, color: "text-red-400", delay: "2.5s" },
+    { Icon: Binary, color: "text-indigo-400", delay: "3s" },
+    { Icon: Terminal, color: "text-orange-400", delay: "3.5s" },
+  ]
+
   return (
-    <section id="hero" ref={heroRef} className="hero-section-with-grid">
+    <section id="hero" ref={heroRef} className="hero-section">
       {/* Animated Grid Background */}
-      <div className="hero-grid-background">
+      <div ref={gridRef} className="hero-grid-background">
         <div className="grid-pattern"></div>
         <div className="grid-overlay"></div>
       </div>
 
-      {/* Animated Tech Icons */}
-      <AnimatedTechIcons />
+      {/* Floating Tech Icons */}
+      <div className="floating-tech-icons">
+        {techIcons.map(({ Icon, color, delay }, index) => (
+          <div key={index} className={`floating-icon ${color}`} style={{ animationDelay: delay }}>
+            <Icon className="w-6 h-6" />
+          </div>
+        ))}
+      </div>
 
-      <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+      {/* Animated SVG Elements */}
+      <div className="hero-svg-animations">
+        <svg className="hero-svg hero-svg-1" viewBox="0 0 100 100">
+          <circle
+            cx="50"
+            cy="50"
+            r="30"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-cyan-400 opacity-30"
+          >
+            <animate attributeName="r" values="30;35;30" dur="3s" repeatCount="indefinite" />
+          </circle>
+        </svg>
+
+        <svg className="hero-svg hero-svg-2" viewBox="0 0 100 100">
+          <polygon
+            points="50,10 90,90 10,90"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-purple-400 opacity-20"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
+              values="0 50 50;360 50 50"
+              dur="20s"
+              repeatCount="indefinite"
+            />
+          </polygon>
+        </svg>
+
+        <svg className="hero-svg hero-svg-3" viewBox="0 0 100 100">
+          <rect
+            x="20"
+            y="20"
+            width="60"
+            height="60"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            className="text-green-400 opacity-25"
+          >
+            <animate attributeName="opacity" values="0.25;0.5;0.25" dur="2s" repeatCount="indefinite" />
+          </rect>
+        </svg>
+      </div>
+
+      <div className="hero-container">
+        <div className="hero-content-grid">
           {/* Left Content */}
-          <div className="w-full md:w-1/2 space-y-6 md:space-y-8 text-center md:text-left">
+          <div className="hero-text-content">
             <h1
               ref={nameRef}
-              className="text-3xl md:text-4xl lg:text-5xl font-bold opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              className="hero-name opacity-0 translate-y-8 transition-all duration-700 ease-out"
               style={{ animationDelay: "200ms" }}
             >
               Hi, I'm <span className="hero-name-gradient">Ansh Shah</span>
@@ -62,7 +130,7 @@ export default function HeroSection() {
 
             <h2
               ref={titleRef}
-              className="text-2xl md:text-3xl lg:text-4xl font-semibold text-gray-700 dark:text-gray-300 opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              className="hero-title opacity-0 translate-y-8 transition-all duration-700 ease-out"
               style={{ animationDelay: "400ms" }}
             >
               Full Stack Developer
@@ -70,7 +138,7 @@ export default function HeroSection() {
 
             <p
               ref={descRef}
-              className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              className="hero-description opacity-0 translate-y-8 transition-all duration-700 ease-out"
               style={{ animationDelay: "600ms" }}
             >
               I build modern, responsive web applications with cutting-edge technologies. Specializing in React,
@@ -79,23 +147,25 @@ export default function HeroSection() {
 
             <div
               ref={buttonsRef}
-              className="flex flex-wrap gap-4 justify-center md:justify-start opacity-0 translate-y-8 transition-all duration-700 ease-out"
+              className="hero-buttons opacity-0 translate-y-8 transition-all duration-700 ease-out"
               style={{ animationDelay: "800ms" }}
             >
               <Link href="/resume" className="hero-button-primary">
-                View Resume
+                <span>View Resume</span>
+                <div className="button-glow"></div>
               </Link>
               <button
                 onClick={() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" })}
                 className="hero-button-secondary"
               >
-                Contact Me
+                <span>Contact Me</span>
+                <div className="button-border-animation"></div>
               </button>
             </div>
           </div>
 
           {/* Right Content - Tech Icon Cloud */}
-          <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+          <div className="hero-cloud-container">
             <TechIconCloud />
           </div>
         </div>

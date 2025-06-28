@@ -21,14 +21,17 @@ interface TechIconCloudProps {
   iconSize?: number
 }
 
-// Ultra-smooth physics with continuous rotation
+// Enhanced physics for ultra-smooth continuous rotation
 const PHYSICS = {
-  friction: 0.998, // Increased for ultra smoothness
-  dragSensitivity: 0.003, // Fine-tuned for perfect control
-  autoRotationSpeed: 0.0008, // Continuous gentle rotation
-  inertiaMultiplier: 0.25, // Reduced for smoother feel
+  friction: 0.998, // Increased friction for smoother deceleration
+  dragSensitivity: 0.003, // Optimized drag sensitivity
+  autoRotationSpeed: 0.0003, // Continuous auto-rotation speed
+  inertiaMultiplier: 0.25, // Reduced inertia for smoother feel
   dampening: 0.99, // Enhanced dampening
-  continuousRotation: true, // Enable continuous rotation
+  continuousRotation: {
+    x: 0.0001, // Gentle X-axis rotation
+    y: 0.0005, // Primary Y-axis rotation for continuous effect
+  },
 }
 
 export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconCloudProps) {
@@ -43,7 +46,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme } = useTheme()
 
-  // Performance refs with enhanced smoothness and continuous rotation
+  // Enhanced performance refs with continuous rotation
   const rotationRef = useRef({ x: 0, y: 0 })
   const velocityRef = useRef({ x: 0, y: 0 })
   const targetVelocityRef = useRef({ x: 0, y: 0 })
@@ -52,7 +55,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const animationIdRef = useRef<number>()
   const isDraggingRef = useRef(false)
   const lastUpdateTimeRef = useRef(performance.now())
-  const autoRotationRef = useRef(true) // Track if auto-rotation is enabled
+  const continuousRotationRef = useRef({ x: 0, y: 0 }) // For continuous rotation tracking
 
   useEffect(() => {
     setMounted(true)
@@ -95,7 +98,9 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     if (!mounted) return "bg-gray-100"
 
     const isDark = resolvedTheme === "dark"
-    return isDark ? "ultra-smooth-globe-dark" : "ultra-smooth-globe-light"
+    return isDark
+      ? "bg-gradient-to-br from-slate-800/90 via-slate-700/90 to-cyan-900/90 backdrop-blur-md"
+      : "bg-gradient-to-br from-white/90 via-gray-50/90 to-blue-50/90 backdrop-blur-md"
   }, [mounted, resolvedTheme])
 
   // Optimized canvas sizing
@@ -217,7 +222,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     }
   }, [])
 
-  // Fast 3D calculations with caching
+  // Enhanced 3D calculations with caching
   const getIconScreenPosition = useCallback((icon: Icon) => {
     if (!canvasRef.current) return { screenX: 0, screenY: 0, scale: 1, depth: 0 }
 
@@ -256,17 +261,18 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     [iconPositions, getIconScreenPosition, iconSize],
   )
 
-  // Ultra-smooth drag handlers with continuous rotation
+  // Enhanced drag handlers with continuous rotation
   const handleStart = useCallback(
     (e: React.MouseEvent | React.TouchEvent) => {
       e.preventDefault()
       const pos = getEventPosition(e)
       setIsDragging(true)
       isDraggingRef.current = true
-      autoRotationRef.current = false // Disable auto-rotation when dragging
       setLastPos(pos)
       velocityRef.current = { x: 0, y: 0 }
       targetVelocityRef.current = { x: 0, y: 0 }
+      // Reset continuous rotation when user starts dragging
+      continuousRotationRef.current = { x: 0, y: 0 }
     },
     [getEventPosition],
   )
@@ -304,13 +310,18 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
   const handleEnd = useCallback(() => {
     setIsDragging(false)
     isDraggingRef.current = false
-    // Re-enable auto-rotation after a short delay
+    // Resume continuous rotation after a brief delay
     setTimeout(() => {
-      autoRotationRef.current = true
+      if (!isDraggingRef.current) {
+        continuousRotationRef.current = {
+          x: PHYSICS.continuousRotation.x,
+          y: PHYSICS.continuousRotation.y,
+        }
+      }
     }, 1000)
   }, [])
 
-  // Ultra-optimized animation loop with continuous rotation
+  // Ultra-optimized animation loop with enhanced continuous rotation
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas?.getContext("2d", {
@@ -324,26 +335,35 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
     ctx.imageSmoothingQuality = "high"
 
     const animate = (currentTime: number) => {
-      const deltaTime = Math.min(currentTime - lastUpdateTimeRef.current, 16.67)
+      const deltaTime = Math.min(currentTime - lastUpdateTimeRef.current, 16.67) // Cap at ~60fps
       lastUpdateTimeRef.current = currentTime
 
       if (!isDraggingRef.current) {
-        // Smooth velocity interpolation
-        velocityRef.current.x += (targetVelocityRef.current.x - velocityRef.current.x) * 0.08
-        velocityRef.current.y += (targetVelocityRef.current.y - velocityRef.current.y) * 0.08
+        // Enhanced continuous rotation system
+        const continuousX = continuousRotationRef.current.x
+        const continuousY = continuousRotationRef.current.y
 
-        // Continuous auto-rotation when not dragging
-        const autoRotationY = autoRotationRef.current ? PHYSICS.autoRotationSpeed : 0
+        // Smooth velocity interpolation
+        velocityRef.current.x += (targetVelocityRef.current.x - velocityRef.current.x) * 0.1
+        velocityRef.current.y += (targetVelocityRef.current.y - velocityRef.current.y) * 0.1
 
         // Apply rotation with time-based smoothing and continuous rotation
-        rotationRef.current.x += velocityRef.current.x * (deltaTime / 16.67)
-        rotationRef.current.y += (velocityRef.current.y + autoRotationY) * (deltaTime / 16.67)
+        rotationRef.current.x += (velocityRef.current.x + continuousX) * (deltaTime / 16.67)
+        rotationRef.current.y += (velocityRef.current.y + continuousY) * (deltaTime / 16.67)
 
         // Apply enhanced dampening
         velocityRef.current.x *= PHYSICS.friction * PHYSICS.dampening
         velocityRef.current.y *= PHYSICS.friction * PHYSICS.dampening
         targetVelocityRef.current.x *= PHYSICS.dampening
         targetVelocityRef.current.y *= PHYSICS.dampening
+
+        // Ensure continuous rotation continues even when velocity approaches zero
+        if (Math.abs(velocityRef.current.x) < 0.001 && Math.abs(velocityRef.current.y) < 0.001) {
+          continuousRotationRef.current = {
+            x: PHYSICS.continuousRotation.x,
+            y: PHYSICS.continuousRotation.y,
+          }
+        }
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -367,7 +387,7 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         ctx.save()
         ctx.translate(screenX, screenY)
 
-        const finalScale = scale * scaleFactor * (isHovered ? 1.1 : 1)
+        const finalScale = scale * scaleFactor * (isHovered ? 1.15 : 1)
         ctx.scale(finalScale, finalScale)
         ctx.globalAlpha = opacity
 
@@ -382,6 +402,12 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
       })
 
       animationIdRef.current = requestAnimationFrame(animate)
+    }
+
+    // Initialize continuous rotation
+    continuousRotationRef.current = {
+      x: PHYSICS.continuousRotation.x,
+      y: PHYSICS.continuousRotation.y,
     }
 
     animationIdRef.current = requestAnimationFrame(animate)
@@ -433,7 +459,11 @@ export default function TechIconCloud({ radius = 125, iconSize = 36 }: TechIconC
         role="img"
       />
 
-      {hoveredIcon && <div className="ultra-smooth-tooltip">{hoveredIcon}</div>}
+      {hoveredIcon && (
+        <div className="absolute bottom-2 md:bottom-6 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-cyan-600 to-blue-600 text-white px-2 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm font-semibold pointer-events-none shadow-lg max-w-xs text-center font-inter backdrop-blur-sm">
+          {hoveredIcon}
+        </div>
+      )}
     </div>
   )
 }
